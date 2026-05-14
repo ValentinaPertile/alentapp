@@ -13,4 +13,6 @@ export interface LockerRepository {
     findByNumberExcludingId(number: number, id: string): Promise<LockerDTO | null>;
 
     update(id: string, data: UpdateLockerRequest): Promise<LockerDTO>;
+
+    softDelete(id: string, deletedAt: Date): Promise<LockerDTO>;
 }
