@@ -2,11 +2,13 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreateLockerRequest, UpdateLockerRequest } from '@alentapp/shared';
 import { CreateLockerUseCase } from '../application/CreateLockerUseCase.js';
 import { UpdateLockerUseCase } from '../application/UpdateLockerUseCase.js';
+import { DeleteLockerUseCase } from '../application/DeleteLockerUseCase.js';
 
 export class LockerController {
     constructor(
         private readonly createLockerUseCase: CreateLockerUseCase,
         private readonly updateLockerUseCase: UpdateLockerUseCase,
+        private readonly deleteLockerUseCase: DeleteLockerUseCase,
     ) {}
 
     async create(
@@ -63,6 +65,27 @@ export class LockerController {
                 error.message.includes('disponible')
             ) {
                 return reply.status(400).send({ error: error.message });
+            }
+
+            return reply.status(500).send({ error: 'Error interno del servidor' });
+        }
+    }
+
+    async delete(
+        request: FastifyRequest<{ Params: { id: string } }>,
+        reply: FastifyReply,
+    ) {
+        try {
+            const { id } = request.params;
+            const locker = await this.deleteLockerUseCase.execute(id);
+            return reply.status(200).send({ data: locker });
+        } catch (error: any) {
+            if (error.message.includes('no fue encontrado')) {
+                return reply.status(404).send({ error: error.message });
+            }
+
+            if (error.message.includes('ya fue dado de baja')) {
+                return reply.status(409).send({ error: error.message });
             }
 
             return reply.status(500).send({ error: 'Error interno del servidor' });
