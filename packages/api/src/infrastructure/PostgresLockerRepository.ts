@@ -78,6 +78,17 @@ export class PostgresLockerRepository implements LockerRepository {
         return this.mapToDTO(locker);
     }
 
+    async softDelete(id: string, deletedAt: Date): Promise<LockerDTO> {
+    const locker = await prisma.locker.update({
+        where: { id },
+        data: {
+            deleted_at: deletedAt,
+        },
+    });
+
+    return this.mapToDTO(locker);
+}
+
     private mapToDTO(locker: DBLocker): LockerDTO {
         return {
             id: locker.id,
