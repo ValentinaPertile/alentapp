@@ -4,6 +4,7 @@ import { PostgresLockerRepository } from './infrastructure/PostgresLockerReposit
 import { LockerValidator } from './domain/services/LockerValidator.js';
 import { CreateLockerUseCase } from './application/CreateLockerUseCase.js';
 import { UpdateLockerUseCase } from './application/UpdateLockerUseCase.js';
+import { DeleteLockerUseCase } from './application/DeleteLockerUseCase.js';
 import { LockerController } from './delivery/LockerController.js';
 import { PostgresMemberRepository } from './infrastructure/PostgresMemberRepository.js';
 import { MemberValidator } from './domain/services/MemberValidator.js';
@@ -44,6 +45,7 @@ export function buildApp() {
     const deleteMemberUseCase = new DeleteMemberUseCase(memberRepo);
     const createLockerUseCase = new CreateLockerUseCase(lockerRepo, lockerValidator);
     const updateLockerUseCase = new UpdateLockerUseCase(lockerRepo, lockerValidator);
+    const deleteLockerUseCase = new DeleteLockerUseCase(lockerRepo);
 
     const memberController = new MemberController(
         createMemberUseCase, 
@@ -54,7 +56,8 @@ export function buildApp() {
 
     const lockerController = new LockerController(
         createLockerUseCase,
-        updateLockerUseCase
+        updateLockerUseCase,
+        deleteLockerUseCase
     );
 
     server.get('/api/v1/socios', memberController.getAll.bind(memberController));
@@ -63,6 +66,7 @@ export function buildApp() {
     server.delete('/api/v1/socios/:id', memberController.delete.bind(memberController));
     server.post('/api/v1/lockers', lockerController.create.bind(lockerController));
     server.put('/api/v1/lockers/:id', lockerController.update.bind(lockerController));
+    server.delete('/api/v1/lockers/:id', lockerController.delete.bind(lockerController));
 
     server.get('/', async (req, rep) => {
         rep.status(200).send({ msg: 'asd' })
