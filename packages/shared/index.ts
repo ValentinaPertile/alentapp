@@ -65,3 +65,34 @@ export interface UpdateLockerRequest {
     status: LockerStatus;
     member_id: string | null;
 }
+
+// ==========================================
+// Payment
+// ==========================================
+
+export type PaymentStatus = 'Pending' | 'Paid' | 'Canceled';
+ 
+export interface PaymentDTO {
+  id: string;
+  amount: number;
+  month: number;
+  year: number;
+  status: PaymentStatus;
+  due_date: string;        
+  payment_date: string | null;
+  cancelled_at: string | null;
+  member_id: string;
+}
+ 
+export interface CreatePaymentRequest {
+  amount: number;
+  month: number;
+  year: number;
+  due_date: string;        
+  payment_date?: string | null;
+  member_id: string;
+}
+ 
+export interface UpdatePaymentRequest {
+  status: PaymentStatus;
+}

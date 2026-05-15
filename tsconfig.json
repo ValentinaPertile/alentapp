@@ -7,10 +7,9 @@
         "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
         "paths": {
-            "@alentapp/shared": [
-                "../shared/index.ts"
-            ]
+            "@alentapp/shared": ["packages/shared/*"]
         }
     }
 }

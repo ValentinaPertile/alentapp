@@ -24,6 +24,12 @@ enum MemberStatus {
     Suspendido
 }
 
+enum PaymentStatus {
+    Pending
+    Paid
+    Canceled
+}
+
 model Member {
     id         String         @id @default(uuid())
     dni        String         @unique
@@ -34,7 +40,7 @@ model Member {
     status     MemberStatus   @default(Activo)
     created_at DateTime       @default(now())
     lockers    Locker[]
-
+    payments   Payment[] //Importante: agregé la relación bidireccional donde un socio
     @@map("members") // Para que en la DB la tabla se llame 'members' en minúscula
 }
 
@@ -62,4 +68,19 @@ model Locker {
     deleted_at DateTime?      @db.Date
 
     @@map("lockers")
+}
+
+model Payment {
+    id           String        @id @default(uuid())
+    amount       Float
+    month        Int
+    year         Int
+    status       PaymentStatus @default(Pending)
+    due_date     DateTime      @db.Date
+    payment_date DateTime?
+    cancelled_at DateTime?
+    member_id    String
+    member       Member        @relation(fields: [member_id], references: [id])
+
+    @@map("payments")
 }

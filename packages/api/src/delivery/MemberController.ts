@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreateMemberUseCase } from '../application/NewMemberUseCase.js';
 import { GetMembersUseCase } from '../application/GetMembersUseCase.js';
-import { UpdateMemberUseCase } from '../application/UpdateMemberUseCase.js';
+import { UpdateMemberUseCase } from '../application/member/UpdateMemberUseCase.js';
 import { DeleteMemberUseCase } from '../application/DeleteMemberUseCase.js';
 import { CreateMemberRequest, UpdateMemberRequest } from '@alentapp/shared';
 
