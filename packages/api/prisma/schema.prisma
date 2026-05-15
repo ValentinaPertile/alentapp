@@ -40,7 +40,8 @@ model Member {
     status     MemberStatus   @default(Activo)
     created_at DateTime       @default(now())
     lockers    Locker[]
-    payments   Payment[] //Importante: agregé la relación bidireccional donde un socio
+    payments   Payment[] //Importante: agregé la relación bidireccional donde 
+    equipment_loans  EquipmentLoan[] // relación bidireccional, no agrega columna                    
     @@map("members") // Para que en la DB la tabla se llame 'members' en minúscula
 }
 
@@ -83,4 +84,24 @@ model Payment {
     member       Member        @relation(fields: [member_id], references: [id])
 
     @@map("payments")
+}
+
+enum EquipmentLoanStatus {
+    Loaned
+    Returned
+    Damaged
+    Canceled
+}
+
+model EquipmentLoan {
+    id           String              @id @default(uuid())
+    item_name    String
+    status       EquipmentLoanStatus @default(Loaned)
+    loan_date    DateTime
+    due_date     DateTime
+    canceled_at  DateTime?
+    member_id    String
+    member       Member              @relation(fields: [member_id], references: [id])
+
+    @@map("equipment_loans")
 }
