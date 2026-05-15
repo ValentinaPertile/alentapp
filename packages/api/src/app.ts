@@ -1,5 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+
+//acá se agregan los casos de uso
 import { PostgresMemberRepository } from './infrastructure/PostgresMemberRepository.js';
 import { MemberValidator } from './domain/services/MemberValidator.js';
 import { CreateMemberUseCase } from './application/NewMemberUseCase.js';
@@ -10,6 +12,7 @@ import { MemberController } from './delivery/MemberController.js';
 import { PostgresPaymentRepository } from './infrastructure/PostgresPaymentRepository.js';
 import { CreatePaymentUseCase } from './application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from './application/UpdatePaymentUseCase.js';
+import { GetPaymentsUseCase } from './application/GetPaymentsUseCase.js';
 import { PaymentController } from './delivery/PaymentController.js';
 
 export function buildApp() {
@@ -59,10 +62,12 @@ export function buildApp() {
     
     const createPaymentUseCase = new CreatePaymentUseCase(paymentRepo, memberRepo);
     const updatePaymentUseCase = new UpdatePaymentUseCase(paymentRepo);
+    const getPaymentsUseCase = new GetPaymentsUseCase(paymentRepo);
 
     const paymentController = new PaymentController(
         createPaymentUseCase,
         updatePaymentUseCase,
+        getPaymentsUseCase,
     );
 
     server.post('/api/v1/payments', paymentController.create.bind(paymentController));
