@@ -43,6 +43,19 @@ export class PostgresLockerRepository implements LockerRepository {
         return locker ? this.mapToDTO(locker) : null;
     }
 
+    async findAll(): Promise<LockerDTO[]> {
+    const lockers = await prisma.locker.findMany({
+        where: {
+            deleted_at: null,
+        },
+        orderBy: {
+            number: 'asc',
+        },
+    });
+
+    return lockers.map(this.mapToDTO);
+}
+
     async findByNumber(number: number): Promise<LockerDTO | null> {
         const locker = await prisma.locker.findUnique({
             where: { number },
