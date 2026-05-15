@@ -3,13 +3,24 @@ import { CreateLockerRequest, UpdateLockerRequest } from '@alentapp/shared';
 import { CreateLockerUseCase } from '../application/CreateLockerUseCase.js';
 import { UpdateLockerUseCase } from '../application/UpdateLockerUseCase.js';
 import { DeleteLockerUseCase } from '../application/DeleteLockerUseCase.js';
+import { GetLockersUseCase } from '../application/GetLockersUseCase.js';
 
 export class LockerController {
     constructor(
         private readonly createLockerUseCase: CreateLockerUseCase,
         private readonly updateLockerUseCase: UpdateLockerUseCase,
         private readonly deleteLockerUseCase: DeleteLockerUseCase,
+        private readonly getLockersUseCase: GetLockersUseCase,
     ) {}
+
+    async getAll(_request: FastifyRequest, reply: FastifyReply) {
+    try {
+        const lockers = await this.getLockersUseCase.execute();
+        return reply.status(200).send({ data: lockers });
+    } catch (error: any) {
+        return reply.status(500).send({ error: 'Error interno del servidor' });
+    }
+}
 
     async create(
         request: FastifyRequest<{ Body: CreateLockerRequest }>,
