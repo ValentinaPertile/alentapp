@@ -11,6 +11,10 @@ import { PostgresPaymentRepository } from './infrastructure/PostgresPaymentRepos
 import { CreatePaymentUseCase } from './application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from './application/UpdatePaymentUseCase.js';
 import { PaymentController } from './delivery/PaymentController.js';
+import { PostgresEquipmentLoanRepository } from './infrastructure/PostgresEquipmentLoanRepository.js';
+import { CreateEquipmentLoanUseCase } from './application/CreateEquipmentLoanUseCase.js';
+import { UpdateEquipmentLoanUseCase } from './application/UpdateEquipmentLoanUseCase.js';
+import { EquipmentLoanController } from './delivery/EquipmentLoanController.js';
 
 export function buildApp() {
     const server = Fastify({
@@ -68,6 +72,18 @@ export function buildApp() {
     server.post('/api/v1/payments', paymentController.create.bind(paymentController));
     server.patch('/api/v1/payments/:id', paymentController.update.bind(paymentController));
     server.delete('/api/v1/payments/:id', paymentController.delete.bind(paymentController));
+    //EquipmentLoan
+    const equipmentLoanRepo = new PostgresEquipmentLoanRepository();
+
+    const createEquipmentLoanUseCase = new CreateEquipmentLoanUseCase(equipmentLoanRepo, memberRepo);
+    const updateEquipmentLoanUseCase = new UpdateEquipmentLoanUseCase(equipmentLoanRepo);
+    const equipmentLoanController = new EquipmentLoanController(
+        createEquipmentLoanUseCase,
+        updateEquipmentLoanUseCase,
+    );
+    server.post('/api/v1/equipment-loans', equipmentLoanController.create.bind(equipmentLoanController));
+    server.patch('/api/v1/equipment-loans/:id', equipmentLoanController.update.bind(equipmentLoanController));
+    server.delete('/api/v1/equipment-loans/:id', equipmentLoanController.delete.bind(equipmentLoanController));
 
     //Health check
     server.get('/', async (_req, rep) => {

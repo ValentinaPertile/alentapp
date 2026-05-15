@@ -63,3 +63,28 @@ export interface CreatePaymentRequest {
 export interface UpdatePaymentRequest {
   status: PaymentStatus;
 }
+// ==========================================
+// EquipmentLoan
+// ==========================================
+export type EquipmentLoanStatus = 'Loaned' | 'Returned' | 'Damaged' | 'Canceled';
+
+export interface EquipmentLoanDTO {
+  id: string;
+  item_name: string;
+  status: EquipmentLoanStatus;
+  loan_date: string;
+  due_date: string;
+  canceled_at: string | null;
+  member_id: string;
+}
+
+export interface CreateEquipmentLoanRequest {
+  item_name: string;
+  loan_date: string;
+  due_date: string;
+  member_id: string;
+}
+
+export interface UpdateEquipmentLoanRequest {
+  status: EquipmentLoanStatus;
+}
