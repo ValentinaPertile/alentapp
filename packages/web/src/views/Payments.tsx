@@ -10,6 +10,7 @@ import {
   Spinner,
   Center,
   Input,
+  IconButton,
 } from "@chakra-ui/react";
 import { LuPlus, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
@@ -26,15 +27,31 @@ import {
   DialogCloseTrigger,
 } from "../components/ui/dialog";
 import { Field } from "../components/ui/field";
+import {      //botón para seleccionar
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+  SelectContent,
+  SelectItem,
+  createListCollection,
+} from "../components/ui/select";
+
+const statusOptions = createListCollection({
+  items: [
+    { label: "Pendiente", value: "Pending" },
+    { label: "Pagado", value: "Paid" },
+    { label: "Cancelado", value: "Canceled" },
+  ],
+});
 
 export function PaymentsView() {
   const [payments, setPayments] = useState<PaymentDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  //Este es el crear
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [formData, setFormData] = useState<CreatePaymentRequest>({
     amount: 0,
     month: new Date().getMonth() + 1,
@@ -42,7 +59,12 @@ export function PaymentsView() {
     due_date: "",
     member_id: "",
   });
-
+ 
+  // Este actualiza el estado
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [updatingPayment, setUpdatingPayment] = useState<PaymentDTO | null>(null);
+  const [newStatus, setNewStatus] = useState<PaymentStatus>("Pending");
+  
   const fetchPayments = async () => {
     setIsLoading(true);
     setError(null);
@@ -67,20 +89,52 @@ export function PaymentsView() {
     setIsDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const openUpdateModal = (payment: PaymentDTO) => {
+    setUpdatingPayment(payment);
+    setNewStatus(payment.status);
+    setIsUpdateOpen(true);
+  };
+ 
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await paymentsService.create(formData);
-      setIsDialogOpen(false);
+      setIsCreateOpen(false);
       fetchPayments();
     } catch (err: any) {
-      alert(err.message || "Error al guardar el pago");
+      alert(err.message || "Error al registrar el pago");
     } finally {
       setIsSubmitting(false);
     }
   };
-
+ 
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!updatingPayment) return;
+    setIsSubmitting(true);
+    try {
+      await paymentsService.update(updatingPayment.id, { status: newStatus });
+      setIsUpdateOpen(false);
+      fetchPayments();
+    } catch (err: any) {
+      alert(err.message || "Error al actualizar el pago");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+ 
+  const handleDelete = async (payment: PaymentDTO) => {
+    if (window.confirm(`¿Estás seguro de que deseas cancelar el pago de $${payment.amount} (${payment.month}/${payment.year})? Esta acción no se puede deshacer.`)) {
+      try {
+        await paymentsService.delete(payment.id);
+        fetchPayments();
+      } catch (err: any) {
+        alert(err.message || "Error al cancelar el pago");
+      }
+    }
+  };
+ 
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -91,29 +145,19 @@ export function PaymentsView() {
     return { bg: "orange.50", color: "orange.700" };
   };
 
-  return (
-    <DialogRoot open={isDialogOpen} onOpenChange={(e) => setIsDialogOpen(e.open)}>
-      <Stack gap="8">
-        <Flex justify="space-between" align="center">
-          <Stack gap="1">
-            <Heading size="2xl" fontWeight="bold">Administración de Pagos</Heading>
-            <Text color="fg.muted" fontSize="md">
-              Gestioná los pagos de los socios del club.
-            </Text>
-          </Stack>
-          <HStack gap="3">
-            <Button variant="outline" onClick={fetchPayments} disabled={isLoading}>
-              <LuRefreshCw /> Actualizar
-            </Button>
-            <Button colorPalette="blue" size="md" onClick={openCreateModal}>
-              <LuPlus /> Registrar Pago
-            </Button>
-          </HStack>
-        </Flex>
+   const statusLabel = (status: string) => {   //ESTADO
+    if (status === "Paid") return "Pagado";
+    if (status === "Canceled") return "Cancelado";
+    return "Pendiente";
+  };
 
-        {/* Modal para registrar pago */}
+
+  return (
+    <>
+      {/* Modal crear */}
+      <DialogRoot open={isCreateOpen} onOpenChange={(e) => setIsCreateOpen(e.open)}>
         <DialogContent>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleCreate}>
             <DialogHeader>
               <DialogTitle>Registrar Nuevo Pago</DialogTitle>
             </DialogHeader>
@@ -177,14 +221,78 @@ export function PaymentsView() {
             <DialogCloseTrigger />
           </form>
         </DialogContent>
-
+      </DialogRoot>
+ 
+      {/* Modal actualizar estado */}
+      <DialogRoot open={isUpdateOpen} onOpenChange={(e) => setIsUpdateOpen(e.open)}>
+        <DialogContent>
+          <form onSubmit={handleUpdate}>
+            <DialogHeader>
+              <DialogTitle>Actualizar Estado del Pago</DialogTitle>
+            </DialogHeader>
+            <DialogBody>
+              <Stack gap="4">
+                <Text color="fg.muted" fontSize="sm">
+                  Pago de <strong>${updatingPayment?.amount.toLocaleString()}</strong> — {updatingPayment?.month}/{updatingPayment?.year}
+                </Text>
+                <Field label="Nuevo Estado" required>
+                  <SelectRoot
+                    collection={statusOptions}
+                    value={[newStatus]}
+                    onValueChange={(e) => setNewStatus(e.value[0] as PaymentStatus)}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Seleccioná un estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.items.map((opt) => (
+                        <SelectItem item={opt} key={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                </Field>
+              </Stack>
+            </DialogBody>
+            <DialogFooter>
+              <DialogActionTrigger asChild>
+                <Button variant="outline">Cancelar</Button>
+              </DialogActionTrigger>
+              <Button type="submit" colorPalette="blue" loading={isSubmitting}>
+                Guardar Cambios
+              </Button>
+            </DialogFooter>
+            <DialogCloseTrigger />
+          </form>
+        </DialogContent>
+      </DialogRoot>
+ 
+      <Stack gap="8">
+        <Flex justify="space-between" align="center">
+          <Stack gap="1">
+            <Heading size="2xl" fontWeight="bold">Administración de Pagos</Heading>
+            <Text color="fg.muted" fontSize="md">
+              Gestioná los pagos de los socios del club.
+            </Text>
+          </Stack>
+          <HStack gap="3">
+            <Button variant="outline" onClick={fetchPayments} disabled={isLoading}>
+              <LuRefreshCw /> Actualizar
+            </Button>
+            <Button colorPalette="blue" size="md" onClick={openCreateModal}>
+              <LuPlus /> Registrar Pago
+            </Button>
+          </HStack>
+        </Flex>
+ 
         {error && (
           <Box p="4" bg="red.50" color="red.700" borderRadius="md" border="1px solid" borderColor="red.200">
             <Text fontWeight="bold">Error:</Text>
             <Text>{error}</Text>
           </Box>
         )}
-
+ 
         <Box
           bg="bg.panel"
           borderRadius="xl"
@@ -198,7 +306,7 @@ export function PaymentsView() {
             <Center h="300px">
               <Stack align="center" gap="4">
                 <Spinner size="xl" color="blue.500" />
-                <Text color="fg.muted">Cargando pagos</Text>
+                <Text color="fg.muted">Cargando pagos...</Text>
               </Stack>
             </Center>
           ) : payments.length === 0 ? (
@@ -218,6 +326,7 @@ export function PaymentsView() {
                   <Table.ColumnHeader py="4">Vencimiento</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Estado</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Fecha de Pago</Table.ColumnHeader>
+                  <Table.ColumnHeader py="4" textAlign="end">Acciones</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -242,13 +351,38 @@ export function PaymentsView() {
                         fontSize="xs"
                         fontWeight="bold"
                       >
-                        {payment.status}
+                        {statusLabel(payment.status)}
                       </Box>
                     </Table.Cell>
                     <Table.Cell color="fg.muted">
                       {payment.payment_date
                         ? new Date(payment.payment_date).toLocaleDateString()
                         : "-"}
+                    </Table.Cell>
+                    <Table.Cell textAlign="end">
+                      <HStack gap="2" justify="flex-end">
+                        {payment.status !== "Canceled" && (
+                          <>
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              aria-label="Actualizar estado del pago"
+                              onClick={() => openUpdateModal(payment)}
+                            >
+                              <LuCheck />
+                            </IconButton>
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              colorPalette="red"
+                              aria-label="Cancelar pago"
+                              onClick={() => handleDelete(payment)}
+                            >
+                              <LuX />
+                            </IconButton>
+                          </>
+                        )}
+                      </HStack>
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -257,6 +391,6 @@ export function PaymentsView() {
           )}
         </Box>
       </Stack>
-    </DialogRoot>
+    </>
   );
 }
