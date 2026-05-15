@@ -8,6 +8,8 @@ export interface LockerRepository {
 
     findById(id: string): Promise<LockerDTO | null>;
 
+    findAll(): Promise<LockerDTO[]>;
+
     findByNumber(number: number): Promise<LockerDTO | null>;
 
     findByNumberExcludingId(number: number, id: string): Promise<LockerDTO | null>;
