@@ -8,6 +8,7 @@ import { GetMembersUseCase } from './application/GetMembersUseCase.js';
 import { UpdateMemberUseCase } from './application/UpdateMemberUseCase.js';
 import { DeleteMemberUseCase } from './application/DeleteMemberUseCase.js';
 import { MemberController } from './delivery/MemberController.js';
+import { GetLockersUseCase } from './application/GetLockersUseCase.js';
 
 import { PostgresPaymentRepository } from './infrastructure/PostgresPaymentRepository.js';
 import { CreatePaymentUseCase } from './application/CreatePaymentUseCase.js';
@@ -75,11 +76,14 @@ export function buildApp() {
     const createLockerUseCase = new CreateLockerUseCase(lockerRepo, lockerValidator);
     const updateLockerUseCase = new UpdateLockerUseCase(lockerRepo, lockerValidator);
     const deleteLockerUseCase = new DeleteLockerUseCase(lockerRepo);
+    const getLockersUseCase = new GetLockersUseCase(lockerRepo);
+
 
     const lockerController = new LockerController(
         createLockerUseCase,
         updateLockerUseCase,
-        deleteLockerUseCase
+        deleteLockerUseCase,
+        getLockersUseCase
     );
 
     // Member routes
@@ -94,6 +98,7 @@ export function buildApp() {
     server.delete('/api/v1/payments/:id', paymentController.delete.bind(paymentController));
 
     // Locker routes
+    server.get('/api/v1/lockers', lockerController.getAll.bind(lockerController));
     server.post('/api/v1/lockers', lockerController.create.bind(lockerController));
     server.put('/api/v1/lockers/:id', lockerController.update.bind(lockerController));
     server.delete('/api/v1/lockers/:id', lockerController.delete.bind(lockerController));
