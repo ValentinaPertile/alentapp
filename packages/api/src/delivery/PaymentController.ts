@@ -2,7 +2,9 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreatePaymentUseCase } from '../application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from '../application/UpdatePaymentUseCase.js';
 import { GetPaymentsUseCase } from '../application/GetPaymentsUseCase.js';
-import { CreatePaymentRequest, UpdatePaymentRequest } from '@alentapp/shared';
+import { CreatePaymentRequest, UpdatePaymentRequest, PaymentStatus } from '@alentapp/shared';
+
+const VALID_STATUSES: PaymentStatus[] = ['Pending', 'Paid', 'Canceled'];
 
 export class PaymentController {
     constructor(
@@ -27,13 +29,18 @@ export class PaymentController {
             const payment = await this.createPaymentUseCase.execute(request.body);
             return reply.status(201).send({ data: payment });
         } catch (error: any) {
+            if (error.message.includes('MEMBER_NOT_FOUND')) {
+                return reply.status(404).send({ error: 'El socio no existe' });
+            }
             if (error.message.includes('Ya existe un pago activo')) {
                 return reply.status(409).send({ error: error.message });
             }
             if (
-                error.message.includes('no existe') ||
                 error.message.includes('mayor a cero') ||
-                error.message.includes('entre 1 y 12')
+                error.message.includes('entre 2000 y 2100') ||
+                error.message.includes('entre 1 y 12') ||
+                error.message.includes('requerido') ||
+                error.message.includes('número válido')
             ) {
                 return reply.status(400).send({ error: error.message });
             }
@@ -47,7 +54,16 @@ export class PaymentController {
     ) {
         try {
             const { id } = request.params;
-            const payment = await this.updatePaymentUseCase.execute(id, request.body.status);
+            const { status } = request.body;
+
+            // Validar que el status sea un valor permitido
+            if (!status || !VALID_STATUSES.includes(status)) {
+                return reply.status(400).send({
+                    error: `El status debe ser uno de: ${VALID_STATUSES.join(', ')}`,
+                });
+            }
+
+            const payment = await this.updatePaymentUseCase.execute(id, status);
             return reply.status(200).send({ data: payment });
         } catch (error: any) {
             if (error.message.includes('no existe')) {
