@@ -1,14 +1,24 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreatePaymentUseCase } from '../application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from '../application/UpdatePaymentUseCase.js';
+import { GetPaymentsUseCase } from '../application/GetPaymentsUseCase.js';
 import { CreatePaymentRequest, UpdatePaymentRequest } from '@alentapp/shared';
 
 export class PaymentController {
     constructor(
         private readonly createPaymentUseCase: CreatePaymentUseCase,
         private readonly updatePaymentUseCase: UpdatePaymentUseCase,
+        private readonly getPaymentsUseCase: GetPaymentsUseCase,
     ) {}
 
+    async getAll(_request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const payments = await this.getPaymentsUseCase.execute();
+            return reply.status(200).send({ data: payments });
+        } catch (error: any) {
+            return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+        }
+    }
     async create(
         request: FastifyRequest<{ Body: CreatePaymentRequest }>,
         reply: FastifyReply,
