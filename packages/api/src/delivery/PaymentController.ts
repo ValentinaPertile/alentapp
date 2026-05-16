@@ -4,6 +4,7 @@ import { UpdatePaymentUseCase } from '../application/UpdatePaymentUseCase.js';
 import { GetPaymentsUseCase } from '../application/GetPaymentsUseCase.js';
 import { CreatePaymentRequest, UpdatePaymentRequest, PaymentStatus } from '@alentapp/shared';
 
+//Aclara cuales son los estados posibles
 const VALID_STATUSES: PaymentStatus[] = ['Pending', 'Paid', 'Canceled'];
 
 export class PaymentController {
