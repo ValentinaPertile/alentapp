@@ -1,6 +1,5 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-
 import { PostgresMemberRepository } from './infrastructure/PostgresMemberRepository.js';
 import { MemberValidator } from './domain/services/MemberValidator.js';
 import { CreateMemberUseCase } from './application/NewMemberUseCase.js';
@@ -13,6 +12,7 @@ import { GetLockersUseCase } from './application/GetLockersUseCase.js';
 import { PostgresPaymentRepository } from './infrastructure/PostgresPaymentRepository.js';
 import { CreatePaymentUseCase } from './application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from './application/UpdatePaymentUseCase.js';
+import { GetPaymentsUseCase } from './application/GetPaymentsUseCase.js';
 import { PaymentController } from './delivery/PaymentController.js';
 import { PostgresEquipmentLoanRepository } from './infrastructure/PostgresEquipmentLoanRepository.js';
 import { CreateEquipmentLoanUseCase } from './application/CreateEquipmentLoanUseCase.js';
@@ -67,12 +67,15 @@ export function buildApp() {
 
     const createPaymentUseCase = new CreatePaymentUseCase(paymentRepo, memberRepo);
     const updatePaymentUseCase = new UpdatePaymentUseCase(paymentRepo);
+    const getPaymentsUseCase = new GetPaymentsUseCase(paymentRepo);
 
     const paymentController = new PaymentController(
         createPaymentUseCase,
         updatePaymentUseCase,
+        getPaymentsUseCase,
     );
 
+    server.get('/api/v1/payments', paymentController.getAll.bind(paymentController));
     // Locker
     const lockerRepo = new PostgresLockerRepository();
     const lockerValidator = new LockerValidator(lockerRepo, memberRepo);

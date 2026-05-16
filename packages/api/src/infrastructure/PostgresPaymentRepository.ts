@@ -42,6 +42,14 @@ export class PostgresPaymentRepository implements PaymentRepository {
         return toDTO(payment);
     }
 
+    //puse acá el findall() para implementar el GET
+    async findAll(): Promise<PaymentDTO[]> {
+        const payments = await this.prisma.payment.findMany({
+            orderBy: [{ year: 'desc' }, { month: 'desc' }],
+        });
+        return payments.map(toDTO);
+    }
+
     async findById(id: string): Promise<PaymentDTO | null> {
         const payment = await this.prisma.payment.findUnique({ where: { id } });
         return payment ? toDTO(payment) : null;
