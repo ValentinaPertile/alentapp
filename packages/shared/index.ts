@@ -32,6 +32,39 @@ export interface UpdateMemberRequest {
   status?: MemberStatus;
 }
 
+// ============================================
+// Locker
+// ============================================
+
+export type LockerStatus = 'Available' | 'Assigned' | 'Maintenance';
+
+export type LockerLocation =
+    | 'Hall'
+    | 'Vestibulo'
+    | 'Pasillo'
+    | 'Gimnasio'
+    | 'Administracion';
+
+export interface LockerDTO {
+    id: string;
+    number: number;
+    location: LockerLocation;
+    status: LockerStatus;
+    member_id: string | null;
+    deleted_at: string | null; // YYYY-MM-DD
+}
+
+export interface CreateLockerRequest {
+    number: number;
+    location: LockerLocation;
+}
+
+export interface UpdateLockerRequest {
+    number: number;
+    location: LockerLocation;
+    status: LockerStatus;
+    member_id: string | null;
+}
 
 // ==========================================
 // Payment
