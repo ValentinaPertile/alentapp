@@ -1,0 +1,115 @@
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../generated/client/client.js';
+import { LockerRepository } from '../domain/LockerRepository.js';
+import { LockerDTO, CreateLockerRequest, UpdateLockerRequest } from '@alentapp/shared';
+
+if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+}
+
+const prisma = new PrismaClient({
+    adapter: new PrismaPg(process.env.DATABASE_URL),
+});
+
+type DBLocker = {
+    id: string;
+    number: number;
+    location: 'Hall' | 'Vestibulo' | 'Pasillo' | 'Gimnasio' | 'Administracion';
+    status: 'Available' | 'Assigned' | 'Maintenance';
+    member_id: string | null;
+    deleted_at: Date | null;
+};
+
+export class PostgresLockerRepository implements LockerRepository {
+    async create(data: CreateLockerRequest): Promise<LockerDTO> {
+        const locker = await prisma.locker.create({
+            data: {
+                number: data.number,
+                location: data.location,
+                status: 'Available',
+                member_id: null,
+                deleted_at: null,
+            },
+        });
+
+        return this.mapToDTO(locker);
+    }
+
+    async findById(id: string): Promise<LockerDTO | null> {
+        const locker = await prisma.locker.findUnique({
+            where: { id },
+        });
+
+        return locker ? this.mapToDTO(locker) : null;
+    }
+
+    async findAll(): Promise<LockerDTO[]> {
+    const lockers = await prisma.locker.findMany({
+        where: {
+            deleted_at: null,
+        },
+        orderBy: {
+            number: 'asc',
+        },
+    });
+
+    return lockers.map(this.mapToDTO);
+}
+
+    async findByNumber(number: number): Promise<LockerDTO | null> {
+        const locker = await prisma.locker.findUnique({
+            where: { number },
+        });
+
+        return locker ? this.mapToDTO(locker) : null;
+    }
+
+    async findByNumberExcludingId(number: number, id: string): Promise<LockerDTO | null> {
+        const locker = await prisma.locker.findFirst({
+            where: {
+                number,
+                NOT: {
+                    id,
+                },
+            },
+        });
+
+        return locker ? this.mapToDTO(locker) : null;
+    }
+
+    async update(id: string, data: UpdateLockerRequest): Promise<LockerDTO> {
+        const locker = await prisma.locker.update({
+            where: { id },
+            data: {
+                number: data.number,
+                location: data.location,
+                status: data.status,
+                member_id: data.member_id,
+            },
+        });
+
+        return this.mapToDTO(locker);
+    }
+
+    async softDelete(id: string, deletedAt: Date): Promise<LockerDTO> {
+    const locker = await prisma.locker.update({
+        where: { id },
+        data: {
+            deleted_at: deletedAt,
+        },
+    });
+
+    return this.mapToDTO(locker);
+}
+
+    private mapToDTO(locker: DBLocker): LockerDTO {
+        return {
+            id: locker.id,
+            number: locker.number,
+            location: locker.location,
+            status: locker.status,
+            member_id: locker.member_id,
+            deleted_at: locker.deleted_at ? locker.deleted_at.toISOString().split('T')[0] : null,
+        };
+    }
+}

@@ -38,6 +38,7 @@ Se define la entidad `EquipmentLoan` con las siguientes propiedades:
 - `loan_date`: DateTime, fecha y hora del préstamo.
 - `due_date`: DateTime, fecha y hora límite de devolución.
 - `member_id`: String, UUID, clave foránea hacia `Member`.
+- `canceled_at`: DateTime | null, fecha en que se canceló el préstamo. Se inicializa en `null`.
 
 ```prisma
 enum EquipmentLoanStatus {
@@ -84,6 +85,7 @@ export interface EquipmentLoanDTO {
     status: EquipmentLoanStatus;
     loan_date: string;
     due_date: string;
+    canceled_at: string | null;
     member_id: string;
 }
 ```

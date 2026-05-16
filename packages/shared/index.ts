@@ -32,6 +32,39 @@ export interface UpdateMemberRequest {
   status?: MemberStatus;
 }
 
+// ============================================
+// Locker
+// ============================================
+
+export type LockerStatus = 'Available' | 'Assigned' | 'Maintenance';
+
+export type LockerLocation =
+    | 'Hall'
+    | 'Vestibulo'
+    | 'Pasillo'
+    | 'Gimnasio'
+    | 'Administracion';
+
+export interface LockerDTO {
+    id: string;
+    number: number;
+    location: LockerLocation;
+    status: LockerStatus;
+    member_id: string | null;
+    deleted_at: string | null; // YYYY-MM-DD
+}
+
+export interface CreateLockerRequest {
+    number: number;
+    location: LockerLocation;
+}
+
+export interface UpdateLockerRequest {
+    number: number;
+    location: LockerLocation;
+    status: LockerStatus;
+    member_id: string | null;
+}
 
 // ==========================================
 // Payment
@@ -62,4 +95,29 @@ export interface CreatePaymentRequest {
  
 export interface UpdatePaymentRequest {
   status: PaymentStatus;
+}
+// ==========================================
+// EquipmentLoan
+// ==========================================
+export type EquipmentLoanStatus = 'Loaned' | 'Returned' | 'Damaged' | 'Canceled';
+
+export interface EquipmentLoanDTO {
+  id: string;
+  item_name: string;
+  status: EquipmentLoanStatus;
+  loan_date: string;
+  due_date: string;
+  canceled_at: string | null;
+  member_id: string;
+}
+
+export interface CreateEquipmentLoanRequest {
+  item_name: string;
+  loan_date: string;
+  due_date: string;
+  member_id: string;
+}
+
+export interface UpdateEquipmentLoanRequest {
+  status: EquipmentLoanStatus;
 }
