@@ -55,4 +55,8 @@ export class PostgresEquipmentLoanRepository implements EquipmentLoanRepository 
         });
         return toDTO(equipmentLoan);
     }
+    async findAll(): Promise<EquipmentLoanDTO[]> {
+        const loans = await this.prisma.equipmentLoan.findMany();
+        return loans.map(toDTO);
+    }
 }

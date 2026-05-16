@@ -2,11 +2,13 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreateEquipmentLoanUseCase } from '../application/CreateEquipmentLoanUseCase.js';
 import { UpdateEquipmentLoanUseCase } from '../application/UpdateEquipmentLoanUseCase.js';
 import { CreateEquipmentLoanRequest, UpdateEquipmentLoanRequest } from '@alentapp/shared';
+import { GetEquipmentLoansUseCase } from '../application/GetEquipmentLoansUseCase.js';
 
 export class EquipmentLoanController {
     constructor(
         private readonly createEquipmentLoanUseCase: CreateEquipmentLoanUseCase,
         private readonly updateEquipmentLoanUseCase: UpdateEquipmentLoanUseCase,
+        private readonly getEquipmentLoansUseCase: GetEquipmentLoansUseCase, 
     ) {}
 
     async create(
@@ -60,6 +62,19 @@ export class EquipmentLoanController {
                 return reply.status(404).send({ error: error.message });
             }
             return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+        }
+    }
+
+    // <-- NUEVO MÉTODO GET ALL
+    async getAll(
+        _request: FastifyRequest,
+        reply: FastifyReply,
+    ) {
+        try {
+            const equipmentLoans = await this.getEquipmentLoansUseCase.execute();
+            return reply.status(200).send({ data: equipmentLoans });
+        } catch (error: any) {
+            return reply.status(500).send({ error: 'Error interno al obtener los préstamos' });
         }
     }
 }
