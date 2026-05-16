@@ -49,6 +49,7 @@ export class CreatePaymentUseCase {
         }
  
         // 7. Validar que no exista un pago activo para ese socio en el mismo mes/año
+        //Que no este en estado Canceled se verifica en infrastructure/PostgresPaymentRepository.ts en el método findActiveByMemberMonthYear
         const existing = await this.paymentRepo.findActiveByMemberMonthYear(
             data.member_id,
             data.month,
