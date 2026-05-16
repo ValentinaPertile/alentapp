@@ -70,6 +70,7 @@ export function buildApp() {
         getPaymentsUseCase,
     );
 
+    server.get('/api/v1/payments', paymentController.getAll.bind(paymentController));
     server.post('/api/v1/payments', paymentController.create.bind(paymentController));
     server.patch('/api/v1/payments/:id', paymentController.update.bind(paymentController));
     server.delete('/api/v1/payments/:id', paymentController.delete.bind(paymentController));
