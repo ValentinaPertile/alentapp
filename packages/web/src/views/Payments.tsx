@@ -49,7 +49,6 @@ export function PaymentsView() {
     amount: 0,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
-    due_date: "",
     member_id: "",
   });
 
@@ -80,7 +79,6 @@ export function PaymentsView() {
       amount: 0,
       month: new Date().getMonth() + 1,
       year: new Date().getFullYear(),
-      due_date: "",
       member_id: "",
     });
     setIsDialogOpen(true);
@@ -214,14 +212,6 @@ export function PaymentsView() {
                     placeholder="Ej. 2026"
                     value={formData.year}
                     onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                    required
-                  />
-                </Field>
-                <Field label="Fecha de Vencimiento" required>
-                  <Input
-                    type="date"
-                    value={formData.due_date}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     required
                   />
                 </Field>
