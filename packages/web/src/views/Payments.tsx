@@ -10,9 +10,8 @@ import {
   Spinner,
   Center,
   Input,
-  IconButton,
 } from "@chakra-ui/react";
-import { LuPlus, LuRefreshCw, LuCheck, LuX } from "react-icons/lu";
+import { LuPlus, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { paymentsService } from "../services/payments";
 import type { PaymentDTO, CreatePaymentRequest, MemberDTO} from "@alentapp/shared";
@@ -159,6 +158,7 @@ export function PaymentsView() {
     return "Pendiente";
   };
 
+ 
   return (
     <>
       {/* Modal crear */}
@@ -339,35 +339,41 @@ export function PaymentsView() {
                     </Table.Cell>
                     <Table.Cell textAlign="end">
                       {payment.status === "Canceled" ? (
-                        <Text color="fg.muted" fontSize="sm">
-                          {payment.cancelled_at
-                            ? new Date(payment.cancelled_at).toLocaleDateString()
-                            : "-"}
-                        </Text>
+                        <Stack gap="2" align="flex-end">
+                          <Text color="fg.muted" fontSize="xs" fontWeight="semibold">
+                            Fecha de cancelación:
+                          </Text>
+                          <Text color="fg.muted" fontSize="sm">
+                            {payment.cancelled_at
+                              ? new Date(payment.cancelled_at).toLocaleDateString()
+                              : "-"}
+                          </Text>
+                        </Stack>
                       ) : (
                         <HStack gap="2" justify="flex-end">
                           {payment.status === "Pending" && (
                             <Button
-                              variant="ghost"
                               size="sm"
-                              colorPalette="green"
+                              bg="green.100"
+                              color="green.700"
+                              _hover={{ bg: "green.200" }}
                               onClick={() => handleMarkAsPaid(payment)}
                               disabled={isSubmitting}
                             >
-                              <LuCheck /> Marcar como Pagado
+                              Marcar como Pagado
                             </Button>
                           )}
                           {(payment.status === "Pending" || payment.status === "Paid") && (
-                            <IconButton
-                              variant="ghost"
+                            <Button
                               size="sm"
-                              colorPalette="red"
-                              aria-label="Cancelar pago"
+                              bg="red.100"
+                              color="red.700"
+                              _hover={{ bg: "red.200" }}
                               onClick={() => handleCancel(payment)}
                               disabled={isSubmitting}
                             >
-                              <LuX />
-                            </IconButton>
+                              Cancelar pago
+                            </Button>
                           )}
                         </HStack>
                       )}
