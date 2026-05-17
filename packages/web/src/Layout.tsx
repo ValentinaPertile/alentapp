@@ -22,10 +22,10 @@ function Layout() {
                     
                     <HStack gap="10">
                         <RouterLink to="/members">
-                            <Text 
-                                fontWeight="semibold" 
-                                fontSize="sm" 
-                                textTransform="uppercase" 
+                            <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                textTransform="uppercase"
                                 letterSpacing="wider"
                                 color="fg.muted"
                                 _hover={{ color: "blue.500", textDecoration: "none" }}
@@ -34,6 +34,12 @@ function Layout() {
                             </Text>
                         </RouterLink>
 
+                        <RouterLink to="/lockers">
+                            <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                textTransform="uppercase"
+                       
                         <RouterLink to="/equipment-loans">
                             <Text 
                                 fontWeight="semibold" 
@@ -43,6 +49,22 @@ function Layout() {
                                 color="fg.muted"
                                 _hover={{ color: "blue.500", textDecoration: "none" }}
                             >
+                                Casilleros
+                            </Text>
+                        </RouterLink>
+
+                        <RouterLink to="/payments">
+                            <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                textTransform="uppercase"
+                                letterSpacing="wider"
+                                color="fg.muted"
+                                _hover={{ color: "blue.500", textDecoration: "none" }}
+                            >
+                                Pagos
+                            </Text>
+                        </RouterLink>
                                 Préstamos
                             </Text>
                         </RouterLink>
