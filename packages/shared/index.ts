@@ -87,15 +87,16 @@ export interface PaymentDTO {
 export interface CreatePaymentRequest {
   amount: number;
   month: number;
-  year: number;
-  due_date: string;        
+  year: number;       
   payment_date?: string | null;
   member_id: string;
+  due_date?: string
 }
  
 export interface UpdatePaymentRequest {
   status: PaymentStatus;
 }
+
 // ==========================================
 // EquipmentLoan
 // ==========================================

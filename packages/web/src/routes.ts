@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router";
-
 import { LockersView } from "./views/Lockers";
 import { MembersView } from "./views/Members";
 import { HomeView } from "./views/Home";
