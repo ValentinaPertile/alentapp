@@ -1,5 +1,5 @@
 import { Box, SimpleGrid, Heading, Text, VStack } from "@chakra-ui/react";
-import { LuCreditCard, LuUsers } from "react-icons/lu";
+import { LuCreditCard, LuUsers, LuArchive } from "react-icons/lu";
 import { SectionCard } from "../components/SectionCard";
 
 export function HomeView() {
