@@ -60,6 +60,26 @@ const lockerStatuses = createListCollection({
   ],
 });
 
+const lockerStatusFilters = createListCollection({
+  items: [
+    { label: "Todos los estados", value: "All" },
+    { label: "Disponible", value: "Available" },
+    { label: "Asignado", value: "Assigned" },
+    { label: "Mantenimiento", value: "Maintenance" },
+  ],
+});
+
+const lockerLocationFilters = createListCollection({
+  items: [
+    { label: "Todas las ubicaciones", value: "All" },
+    { label: "Hall", value: "Hall" },
+    { label: "Vestíbulo", value: "Vestibulo" },
+    { label: "Pasillo", value: "Pasillo" },
+    { label: "Gimnasio", value: "Gimnasio" },
+    { label: "Administración", value: "Administracion" },
+  ],
+});
+
 const initialFormData: CreateLockerRequest & {
   status: LockerStatus;
   member_id: string | null;
@@ -80,6 +100,30 @@ export function LockersView() {
   const [editingLockerId, setEditingLockerId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState(initialFormData);
+
+  const [numberSearch, setNumberSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<LockerStatus | "All">("All");
+  const [locationFilter, setLocationFilter] = useState<LockerLocation | "All">("All");
+
+  const filteredLockers = lockers.filter((locker) => {
+    const matchesNumber =
+      numberSearch.trim() === "" ||
+      locker.number.toString().includes(numberSearch.trim());
+
+    const matchesStatus =
+      statusFilter === "All" || locker.status === statusFilter;
+
+    const matchesLocation =
+      locationFilter === "All" || locker.location === locationFilter;
+
+    return matchesNumber && matchesStatus && matchesLocation;
+  });
+
+  const clearFilters = () => {
+    setNumberSearch("");
+    setStatusFilter("All");
+    setLocationFilter("All");
+  };
 
   const fetchLockers = async () => {
     setIsLoading(true);
@@ -185,6 +229,88 @@ export function LockersView() {
             </Button>
           </HStack>
         </Flex>
+
+        <Box
+          p="4"
+          bg="bg.panel"
+          borderRadius="xl"
+          borderWidth="1px"
+        >
+          <Stack gap="4">
+            <Flex justify="space-between" align="center">
+              <Stack gap="0">
+                <Text fontWeight="semibold">Filtros de búsqueda</Text>
+                <Text color="fg.muted" fontSize="sm">
+                  Mostrando {filteredLockers.length} de {lockers.length} casilleros
+                </Text>
+              </Stack>
+
+              <Button variant="ghost" onClick={clearFilters}>
+                Limpiar filtros
+              </Button>
+            </Flex>
+
+            <Flex gap="4" align="end" wrap="wrap">
+              <Box minW="180px">
+                <Field label="Buscar por número">
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="Ej: 3"
+                    value={numberSearch}
+                    onChange={(e) => setNumberSearch(e.target.value)}
+                  />
+                </Field>
+              </Box>
+
+              <Box minW="220px">
+                <Field label="Estado">
+                  <SelectRoot
+                    collection={lockerStatusFilters}
+                    value={[statusFilter]}
+                    onValueChange={(e) =>
+                      setStatusFilter(e.value[0] as LockerStatus | "All")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Seleccione un estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {lockerStatusFilters.items.map((status) => (
+                        <SelectItem item={status} key={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                </Field>
+              </Box>
+
+              <Box minW="220px">
+                <Field label="Ubicación">
+                  <SelectRoot
+                    collection={lockerLocationFilters}
+                    value={[locationFilter]}
+                    onValueChange={(e) =>
+                      setLocationFilter(e.value[0] as LockerLocation | "All")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Seleccione una ubicación" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {lockerLocationFilters.items.map((location) => (
+                        <SelectItem item={location} key={location.value}>
+                          {location.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                </Field>
+              </Box>
+            </Flex>
+          </Stack>
+        </Box>
 
         <DialogContent>
           <form onSubmit={handleSubmit}>
@@ -327,6 +453,17 @@ export function LockersView() {
                 </Button>
               </Stack>
             </Center>
+          ) : filteredLockers.length === 0 ? (
+            <Center h="300px">
+              <Stack align="center" gap="4">
+                <Text color="fg.muted">
+                  No hay casilleros que coincidan con los filtros seleccionados.
+                </Text>
+                <Button variant="ghost" onClick={clearFilters}>
+                  Limpiar filtros
+                </Button>
+              </Stack>
+            </Center>
           ) : (
             <Table.Root size="md" variant="line" interactive>
               <Table.Header>
@@ -342,7 +479,7 @@ export function LockersView() {
               </Table.Header>
 
               <Table.Body>
-                {lockers.map((locker) => (
+                {filteredLockers.map((locker) => (
                   <Table.Row key={locker.id} _hover={{ bg: "bg.muted/30" }}>
                     <Table.Cell fontWeight="semibold" color="fg.emphasized">
                       {locker.number}
@@ -355,7 +492,9 @@ export function LockersView() {
                         py="0.5"
                         borderRadius="md"
                         bg={locker.status === "Available" ? "green.50" : "orange.50"}
-                        color={locker.status === "Available" ? "green.700" : "orange.700"}
+                        color={
+                          locker.status === "Available" ? "green.700" : "orange.700"
+                        }
                         fontSize="xs"
                         fontWeight="bold"
                       >
