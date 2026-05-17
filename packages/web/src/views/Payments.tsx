@@ -12,10 +12,10 @@ import {
   Input,
   IconButton,
 } from "@chakra-ui/react";
-import { LuPlus, LuRefreshCw } from "react-icons/lu";
+import { LuPlus, LuRefreshCw, LuCheck, LuX } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { paymentsService } from "../services/payments";
-import type { PaymentDTO, CreatePaymentRequest } from "@alentapp/shared";
+import type { PaymentDTO, CreatePaymentRequest, PaymentStatus } from "@alentapp/shared";
 import {
   DialogRoot,
   DialogContent,
@@ -27,7 +27,7 @@ import {
   DialogCloseTrigger,
 } from "../components/ui/dialog";
 import { Field } from "../components/ui/field";
-import {      //botón para seleccionar
+import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
@@ -49,7 +49,7 @@ export function PaymentsView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //Este es el crear
+  // Este es el crear
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreatePaymentRequest>({
@@ -59,12 +59,12 @@ export function PaymentsView() {
     due_date: "",
     member_id: "",
   });
- 
+
   // Este actualiza el estado
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [updatingPayment, setUpdatingPayment] = useState<PaymentDTO | null>(null);
   const [newStatus, setNewStatus] = useState<PaymentStatus>("Pending");
-  
+
   const fetchPayments = async () => {
     setIsLoading(true);
     setError(null);
@@ -89,18 +89,18 @@ export function PaymentsView() {
     setIsDialogOpen(true);
   };
 
- const openUpdateModal = (payment: PaymentDTO) => {
+  const openUpdateModal = (payment: PaymentDTO) => {
     setUpdatingPayment(payment);
     setNewStatus(payment.status);
     setIsUpdateOpen(true);
   };
- 
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await paymentsService.create(formData);
-      setIsCreateOpen(false);
+      setIsDialogOpen(false);
       fetchPayments();
     } catch (err: any) {
       alert(err.message || "Error al registrar el pago");
@@ -108,7 +108,7 @@ export function PaymentsView() {
       setIsSubmitting(false);
     }
   };
- 
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!updatingPayment) return;
@@ -123,7 +123,7 @@ export function PaymentsView() {
       setIsSubmitting(false);
     }
   };
- 
+
   const handleDelete = async (payment: PaymentDTO) => {
     if (window.confirm(`¿Estás seguro de que deseas cancelar el pago de $${payment.amount} (${payment.month}/${payment.year})? Esta acción no se puede deshacer.`)) {
       try {
@@ -134,7 +134,7 @@ export function PaymentsView() {
       }
     }
   };
- 
+
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -145,17 +145,16 @@ export function PaymentsView() {
     return { bg: "orange.50", color: "orange.700" };
   };
 
-   const statusLabel = (status: string) => {   //ESTADO
+  const statusLabel = (status: string) => {
     if (status === "Paid") return "Pagado";
     if (status === "Canceled") return "Cancelado";
     return "Pendiente";
   };
 
-
   return (
     <>
       {/* Modal crear */}
-      <DialogRoot open={isCreateOpen} onOpenChange={(e) => setIsCreateOpen(e.open)}>
+      <DialogRoot open={isDialogOpen} onOpenChange={(e) => setIsDialogOpen(e.open)}>
         <DialogContent>
           <form onSubmit={handleCreate}>
             <DialogHeader>
@@ -222,7 +221,7 @@ export function PaymentsView() {
           </form>
         </DialogContent>
       </DialogRoot>
- 
+
       {/* Modal actualizar estado */}
       <DialogRoot open={isUpdateOpen} onOpenChange={(e) => setIsUpdateOpen(e.open)}>
         <DialogContent>
@@ -267,7 +266,7 @@ export function PaymentsView() {
           </form>
         </DialogContent>
       </DialogRoot>
- 
+
       <Stack gap="8">
         <Flex justify="space-between" align="center">
           <Stack gap="1">
@@ -285,14 +284,14 @@ export function PaymentsView() {
             </Button>
           </HStack>
         </Flex>
- 
+
         {error && (
           <Box p="4" bg="red.50" color="red.700" borderRadius="md" border="1px solid" borderColor="red.200">
             <Text fontWeight="bold">Error:</Text>
             <Text>{error}</Text>
           </Box>
         )}
- 
+
         <Box
           bg="bg.panel"
           borderRadius="xl"
