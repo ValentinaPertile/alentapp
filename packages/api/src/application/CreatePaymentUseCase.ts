@@ -37,19 +37,39 @@ export class CreatePaymentUseCase {
             throw new Error('El mes debe estar entre 1 y 12');
         }
 
-        // 5. Validar rango de año
-        if (data.year < 2000 || data.year > 2100) {
-            throw new Error('El año debe estar entre 2000 y 2100');
+        // 5. Validar formato estricto YYYY-MM-DD para que no vuelva a romper
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(data.due_date)) {
+            throw new Error('El formato de due_date debe ser YYYY-MM-DD');
         }
-
-        // 6. Validar que el socio existe, lanza 404 desde el controller
+        const dueDateParsed = new Date(data.due_date);
+        if (isNaN(dueDateParsed.getTime())) {
+            throw new Error('La fecha due_date no es válida');
+        }
+        // 7. Validar formato de payment_date si se envía
+        if (data.payment_date) {
+            if (!dateRegex.test(data.payment_date)) {
+                throw new Error('El formato de payment_date debe ser YYYY-MM-DD');
+            }
+            if (isNaN(new Date(data.payment_date).getTime())) {
+                throw new Error('La fecha payment_date no es válida');
+            }
+        }
+ 
+        // 8. Validar formato de member_id (UUID)
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(data.member_id)) {
+            throw new Error('El formato de member_id no es un UUID válido');
+        }
+ 
+        // 9. Validar que el socio existe — lanza 404 desde el controller
         const member = await this.memberRepo.findById(data.member_id);
         if (!member) {
             throw new Error('MEMBER_NOT_FOUND: El socio no existe');
         }
  
-        // 7. Validar que no exista un pago activo para ese socio en el mismo mes/año
-        //Que no este en estado Canceled se verifica en infrastructure/PostgresPaymentRepository.ts en el método findActiveByMemberMonthYear
+        // 10. Validar que no exista un pago activo para ese socio en el mismo mes/año
+        // Que no esté en estado Canceled se verifica en PostgresPaymentRepository.findActiveByMemberMonthYear
         const existing = await this.paymentRepo.findActiveByMemberMonthYear(
             data.member_id,
             data.month,
@@ -58,8 +78,8 @@ export class CreatePaymentUseCase {
         if (existing) {
             throw new Error('Ya existe un pago activo para ese socio en ese período');
         }
-
-        // 8. Crear el pago (siempre arranca en Pending)
+ 
+        // 11. Crear el pago (siempre arranca en Pending)
         return await this.paymentRepo.create(data);
     }
 }
