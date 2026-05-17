@@ -30,6 +30,12 @@ export function HomeView() {
           to="/members"
           icon={LuUsers}
         />
+        <SectionCard
+          title="Casilleros"
+          description="Gestiona el alta, modificación, disponibilidad y baja lógica de los casilleros del club."
+          to="/lockers"
+          icon={LuArchive}
+        />
 
         <SectionCard
           title="Pagos"
