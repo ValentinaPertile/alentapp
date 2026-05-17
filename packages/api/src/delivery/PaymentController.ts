@@ -19,7 +19,7 @@ export class PaymentController {
             const payments = await this.getPaymentsUseCase.execute();
             return reply.status(200).send({ data: payments });
         } catch (error: any) {
-            return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
         }
     }
     async create(
@@ -45,7 +45,7 @@ export class PaymentController {
             ) {
                 return reply.status(400).send({ error: error.message });
             }
-            return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
         }
     }
 
@@ -67,13 +67,14 @@ export class PaymentController {
             const payment = await this.updatePaymentUseCase.execute(id, status);
             return reply.status(200).send({ data: payment });
         } catch (error: any) {
+            console.log(error);
             if (error.message.includes('no existe')) {
                 return reply.status(404).send({ error: error.message });
             }
             if (error.message.includes('inválida')) {
                 return reply.status(400).send({ error: error.message });
             }
-            return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
         }
     }
 
@@ -90,7 +91,7 @@ export class PaymentController {
             if (error.message.includes('no existe')) {
                 return reply.status(404).send({ error: error.message });
             }
-            return reply.status(500).send({ error: 'Error interno, reintente más tarde' });
+            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
         }
     }
 }
