@@ -15,7 +15,7 @@ import {
 import { LuPlus, LuPencil, LuTrash2, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { equipmentLoansService } from "../services/equipmentLoans";
-import { membersService } from "../services/members"; // <-- Traemos el servicio de Valen
+import { membersService } from "../services/members"; 
 import type { EquipmentLoanDTO, CreateEquipmentLoanRequest, EquipmentLoanStatus } from "../services/equipmentLoans";
 import type { MemberDTO } from "@alentapp/shared"; // <-- Usamos el tipado oficial de socios
 import { 
