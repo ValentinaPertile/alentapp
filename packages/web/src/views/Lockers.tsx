@@ -15,12 +15,14 @@ import {
 import { LuPlus, LuPencil, LuTrash2, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { lockersService } from "../services/lockers";
+import { membersService } from "../services/members";
 import type {
   LockerDTO,
   CreateLockerRequest,
   UpdateLockerRequest,
   LockerLocation,
   LockerStatus,
+  MemberDTO,
 } from "@alentapp/shared";
 import {
   DialogRoot,
@@ -92,6 +94,7 @@ const initialFormData: CreateLockerRequest & {
 
 export function LockersView() {
   const [lockers, setLockers] = useState<LockerDTO[]>([]);
+  const [members, setMembers] = useState<MemberDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,13 +108,27 @@ export function LockersView() {
   const [statusFilter, setStatusFilter] = useState<LockerStatus | "All">("All");
   const [locationFilter, setLocationFilter] = useState<LockerLocation | "All">("All");
 
+  const activeMembers = members.filter((member) => {
+    const status = String(member.status).toLowerCase();
+    return status !== "cancelado" && status !== "canceled";
+  });
+
+  const memberOptions = createListCollection({
+    items: [
+      { label: "Sin asignar", value: "none" },
+      ...activeMembers.map((member) => ({
+        label: `${member.name} — DNI: ${member.dni}`,
+        value: member.id,
+      })),
+    ],
+  });
+
   const filteredLockers = lockers.filter((locker) => {
     const matchesNumber =
       numberSearch.trim() === "" ||
       locker.number.toString().includes(numberSearch.trim());
 
-    const matchesStatus =
-      statusFilter === "All" || locker.status === statusFilter;
+    const matchesStatus = statusFilter === "All" || locker.status === statusFilter;
 
     const matchesLocation =
       locationFilter === "All" || locker.location === locationFilter;
@@ -136,6 +153,15 @@ export function LockersView() {
       setError(err.message || "Error al cargar los casilleros");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    try {
+      const data = await membersService.getAll();
+      setMembers(data);
+    } catch (err: any) {
+      alert(err.message || "Error al cargar los socios");
     }
   };
 
@@ -205,6 +231,7 @@ export function LockersView() {
 
   useEffect(() => {
     fetchLockers();
+    fetchMembers();
   }, []);
 
   return (
@@ -230,12 +257,7 @@ export function LockersView() {
           </HStack>
         </Flex>
 
-        <Box
-          p="4"
-          bg="bg.panel"
-          borderRadius="xl"
-          borderWidth="1px"
-        >
+        <Box p="4" bg="bg.panel" borderRadius="xl" borderWidth="1px">
           <Stack gap="4">
             <Flex justify="space-between" align="center">
               <Stack gap="0">
@@ -384,17 +406,34 @@ export function LockersView() {
                       </SelectRoot>
                     </Field>
 
-                    <Field label="ID del socio asignado">
-                      <Input
-                        placeholder="UUID del socio o vacío si está disponible"
-                        value={formData.member_id || ""}
-                        onChange={(e) =>
+                    <Field label="Socio asignado">
+                      <SelectRoot
+                        collection={memberOptions}
+                        value={[formData.member_id || "none"]}
+                        onValueChange={(e) => {
+                          const selectedMemberId = e.value[0];
+
                           setFormData({
                             ...formData,
-                            member_id: e.target.value || null,
-                          })
-                        }
-                      />
+                            member_id:
+                              selectedMemberId === "none" ? null : selectedMemberId,
+                            status:
+                              selectedMemberId === "none" ? "Available" : "Assigned",
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValueText placeholder="Seleccione un socio" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {memberOptions.items.map((member) => (
+                            <SelectItem item={member} key={member.value}>
+                              {member.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
                     </Field>
                   </>
                 )}
