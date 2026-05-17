@@ -1,9 +1,11 @@
 import { createBrowserRouter } from "react-router";
+import { LockersView } from "./views/Lockers";
 import { MembersView } from "./views/Members";
 import { HomeView } from "./views/Home";
-import { EquipmentLoansView } from "./views/EquipmentLoans";
-import { LockersView } from "./views/Lockers";
-import { PaymentsView } from "./views/Payments";
+import { EquipmentLoansView } from "./views/EquipmentLoans"; 
+import { PaymentsView } from "./views/Payments"; //le dice al Frontend que componente mostrar según la URl que el usuario visita
+
+
 import Layout from "./Layout";
 
 export let router = createBrowserRouter([
