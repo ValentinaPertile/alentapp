@@ -15,7 +15,7 @@ import {
 import { LuPlus, LuRefreshCw, LuCheck, LuX } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { paymentsService } from "../services/payments";
-import type { PaymentDTO, CreatePaymentRequest, PaymentStatus } from "@alentapp/shared";
+import type { PaymentDTO, CreatePaymentRequest, PaymentStatus,MemberDTO} from "@alentapp/shared";
 import {
   DialogRoot,
   DialogContent,
@@ -35,6 +35,7 @@ import {
   SelectItem,
   createListCollection,
 } from "../components/ui/select";
+import { membersService } from "../services/members";
 
 const statusOptions = createListCollection({
   items: [
@@ -46,6 +47,7 @@ const statusOptions = createListCollection({
 
 export function PaymentsView() {
   const [payments, setPayments] = useState<PaymentDTO[]>([]);
+  const [members, setMembers] = useState<MemberDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,6 +77,15 @@ export function PaymentsView() {
       setError(err.message || "Error al cargar los pagos");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    try {
+      const data = await membersService.getAll();
+      setMembers(data);
+    } catch (err: any) {
+      console.error("Error al cargar los socios:", err);
     }
   };
 
@@ -135,8 +146,23 @@ export function PaymentsView() {
     }
   };
 
+    // Colección dinámica de socios para el select
+  const membersCollection = createListCollection({
+    items: members.map((m) => ({
+      label: `${m.name} — DNI: ${m.dni}`,
+      value: m.id,
+    })),
+  });
+ 
+  // Nombre del socio para mostrarlo en la tabla
+  const getMemberName = (memberId: string) => {
+    const member = members.find((m) => m.id === memberId);
+    return member ? member.name : memberId;
+  };
+
   useEffect(() => {
     fetchPayments();
+    fetchMembers();
   }, []);
 
   const statusColor = (status: string) => {
@@ -162,13 +188,23 @@ export function PaymentsView() {
             </DialogHeader>
             <DialogBody>
               <Stack gap="4">
-                <Field label="ID del Socio" required>
-                  <Input
-                    placeholder="UUID del socio"
-                    value={formData.member_id}
-                    onChange={(e) => setFormData({ ...formData, member_id: e.target.value })}
-                    required
-                  />
+                <Field label="Socio" required>
+                  <SelectRoot
+                    collection={membersCollection}
+                    value={formData.member_id ? [formData.member_id] : []}
+                    onValueChange={(e) => setFormData({ ...formData, member_id: e.value[0] })}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Seleccioná un socio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {membersCollection.items.map((m) => (
+                        <SelectItem item={m} key={m.value}>
+                          {m.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
                 </Field>
                 <Field label="Monto" required>
                   <Input
@@ -319,7 +355,7 @@ export function PaymentsView() {
             <Table.Root size="md" variant="line" interactive>
               <Table.Header>
                 <Table.Row bg="bg.muted/50">
-                  <Table.ColumnHeader py="4">Socio ID</Table.ColumnHeader>
+                  <Table.ColumnHeader py="4">Socio</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Monto</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Período</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Vencimiento</Table.ColumnHeader>
@@ -331,7 +367,7 @@ export function PaymentsView() {
               <Table.Body>
                 {payments.map((payment) => (
                   <Table.Row key={payment.id} _hover={{ bg: "bg.muted/30" }}>
-                    <Table.Cell color="fg.muted" fontSize="xs">{payment.member_id}</Table.Cell>
+                    <Table.Cell color="fg.muted">{getMemberName(payment.member_id)}</Table.Cell>
                     <Table.Cell fontWeight="semibold" color="fg.emphasized">
                       ${payment.amount.toLocaleString()}
                     </Table.Cell>
