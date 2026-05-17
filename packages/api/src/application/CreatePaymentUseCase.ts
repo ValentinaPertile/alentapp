@@ -37,7 +37,12 @@ export class CreatePaymentUseCase {
             throw new Error('El mes debe estar entre 1 y 12');
         }
 
-        // 5. Validar formato estricto YYYY-MM-DD para que no vuelva a romper
+        // 5. Validar año razonable
+            if (data.year < 2000 || data.year > 2100) {
+               throw new Error('El año debe estar entre 2000 y 2100');
+            }
+        
+        // 6. Validar formato estricto YYYY-MM-DD para que no vuelva a romper
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(data.due_date)) {
             throw new Error('El formato de due_date debe ser YYYY-MM-DD');
@@ -46,6 +51,7 @@ export class CreatePaymentUseCase {
         if (isNaN(dueDateParsed.getTime())) {
             throw new Error('La fecha due_date no es válida');
         }
+        
         // 7. Validar formato de payment_date si se envía
         if (data.payment_date) {
             if (!dateRegex.test(data.payment_date)) {
