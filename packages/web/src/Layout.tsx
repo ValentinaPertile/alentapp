@@ -1,6 +1,5 @@
 import { Provider } from './components/ui/provider';
 import { Box, Container, Flex, Text, HStack } from '@chakra-ui/react';
-
 import { Outlet, Link as RouterLink } from "react-router";
 
 function Layout() {
@@ -20,6 +19,7 @@ function Layout() {
                             Alentapp
                         </Text>
                     </RouterLink>
+                    
                     <HStack gap="10">
                         <RouterLink to="/members">
                             <Text 
@@ -34,7 +34,6 @@ function Layout() {
                             </Text>
                         </RouterLink>
 
-                        {/* ENLACE PARA TU NUEVA PANTALLA DE PRÉSTAMOS */}
                         <RouterLink to="/equipment-loans">
                             <Text 
                                 fontWeight="semibold" 
@@ -47,18 +46,32 @@ function Layout() {
                                 Préstamos
                             </Text>
                         </RouterLink>
-                            <RouterLink to="/payments">
-                                <Text 
-                                    fontWeight="semibold" 
-                                    fontSize="sm" 
-                                    textTransform="uppercase" 
-                                    letterSpacing="wider"
-                                    color="fg.muted"
-                                    _hover={{ color: "blue.500", textDecoration: "none" }}
-                                >
-                                    Pagos
-                                </Text>
-                            </RouterLink>
+
+                        <RouterLink to="/lockers">
+                            <Text 
+                                fontWeight="semibold" 
+                                fontSize="sm" 
+                                textTransform="uppercase" 
+                                letterSpacing="wider"
+                                color="fg.muted"
+                                _hover={{ color: "blue.500", textDecoration: "none" }}
+                            >
+                                Casilleros
+                            </Text>
+                        </RouterLink>
+
+                        <RouterLink to="/payments">
+                            <Text 
+                                fontWeight="semibold" 
+                                fontSize="sm" 
+                                textTransform="uppercase" 
+                                letterSpacing="wider"
+                                color="fg.muted"
+                                _hover={{ color: "blue.500", textDecoration: "none" }}
+                            >
+                                Pagos
+                            </Text>
+                        </RouterLink>
                     </HStack>
                 </Flex>
             </Box>
@@ -68,4 +81,5 @@ function Layout() {
         </Provider>
     );
 }
+
 export default Layout;
