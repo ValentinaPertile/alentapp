@@ -1,0 +1,1163 @@
+[33mcommit b7eb1ebf9f71fa03091837857276114bd393a081[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/payment-create[m[33m)[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sat May 16 08:32:57 2026 -0300
+
+    Agrego a Views/Home.tsx la sección de pagos
+
+[33mcommit 106d11fcab1b545be47db2f1d81a2eec30dadc35[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sat May 16 08:29:00 2026 -0300
+
+    Agrego al Layout.tsx la tarjeta de Payments
+
+[33mcommit 8020878d55aac77aa3fdec6bbb0580b8d3f052f3[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 23:11:42 2026 -0300
+
+    feat(payment): soluciono errores relacionados con el GET en PaymentController.ts
+
+[33mcommit e4882d655143c18abb3fee2010693b3a3138228f[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: ed96866 a07b971
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 23:00:51 2026 -0300
+
+    Merge pull request #31 from ValentinaPertile/feature/payment-create
+    
+    feat(payment): agrego Frontend de Create Payment
+
+[33mcommit a07b97183303bb63a66f376060ddc8111fca7a84[m
+Merge: 4f9f5a7 ed96866
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 15 22:47:14 2026 -0300
+
+    Merge branch 'main' into feature/payment-create
+
+[33mcommit 4f9f5a72024d8e6c4535d5d26997a81f298e2335[m[33m ([m[1;31morigin/feature/payment-create[m[33m)[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 22:13:14 2026 -0300
+
+    feat(payment): realizo pequeños cambios en app.ts
+
+[33mcommit ed96866b3c9ee73fe07dafe55bc144814c450eba[m[33m ([m[1;32mmain[m[33m)[m
+Merge: 2c1add9 20e217f
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 15 21:35:08 2026 -0300
+
+    Merge pull request #29 from ValentinaPertile/feature/locker-delete
+    
+    feat(Lockers): Implementacion del CRUD
+
+[33mcommit 20e217fb2a47b0ffcfd4709fbf3e5ebefd21fd86[m[33m ([m[1;31morigin/feature/locker-delete[m[33m)[m
+Merge: e4cc918 9cee605
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 16 00:07:14 2026 +0000
+
+    Merge remote-tracking branch 'origin/feature/locker-delete' into feature/locker-delete
+
+[33mcommit e4cc91874b5c026950123860dae0d3acdf2cf629[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 23:56:21 2026 +0000
+
+    feat(locker): registra ruta GET de Locker en app
+
+[33mcommit 9cee605eb38fbf399791720dabb0792d52f5aba0[m
+Merge: 6518d0e 2c1add9
+Author: Luana-suarez <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 20:29:00 2026 -0300
+
+    Merge branch 'main' into feature/locker-delete
+
+[33mcommit 2c1add96ecbbbc5ced8dec81f7b371962a652aab[m
+Merge: f742527 762630b
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 19:39:14 2026 -0300
+
+    Merge pull request #30 from ValentinaPertile/feature/payment-update
+    
+    feat(payment): agrego Update y Delete de Payment en el frontend
+
+[33mcommit f7425272712bbac392b36f5ff8e39f698dde2612[m
+Merge: dad880a c74e0e6
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 15 19:33:27 2026 -0300
+
+    Merge pull request #26 from ValentinaPertile/feature/equipment-loan
+    
+    feat(equipment-loan): implemento Alta y Modificación de EquipmentLoan
+
+[33mcommit 9bf417efc43b48589ce34b32cdecb33881fec8c3[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 19:12:22 2026 -0300
+
+    feat(payment): registro las rutas de GET /api/v1/payments en app.ts
+
+[33mcommit 73c34097f3b18450181555497f1a0c9aaf188765[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 19:06:12 2026 -0300
+
+    feat(payment): agrego findAll() a PostgresPaymentRepository.ts para implementar el GET
+
+[33mcommit 428db3e9b7ad6a885860bae04ef026658429759a[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 19:02:02 2026 -0300
+
+    feat(payment): agrego GetPaymentsUseCase.ts basandome en GetMembers
+
+[33mcommit 0aa18d94e5974a7ffff4451499c7207b1ddc3fc4[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 19:00:13 2026 -0300
+
+    feat(payment): agrego a PaymentRepository findAll()
+
+[33mcommit 762630b47075e261022d8e0a8176516a73a6e8b0[m[33m ([m[1;31morigin/feature/payment-update[m[33m, [m[1;32mfeature/payment-update[m[33m)[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 18:49:33 2026 -0300
+
+    feat(payment): actualizo Payments.tsx para agregar el botón de cambio de estado y el de cancelar
+
+[33mcommit 31b8fc6395221093f9094941e267f157a41523b3[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 18:40:04 2026 -0300
+
+    feat(payment): actualizo payments.ts para incluir update y delete
+
+[33mcommit c58435492d8002b6f154eaaed5efd4c6f350cd01[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 18:36:57 2026 -0300
+
+    feat(payment): agrego el componente de Payments a routes.tsx
+
+[33mcommit c8c5af13feb516c15258e45a1d963747bdc281de[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 18:33:30 2026 -0300
+
+    feat(payment): agrego views/Payments.tsx
+
+[33mcommit 164d9ff9a7f4e0f944872c03fc28e2778d4eece1[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 18:32:20 2026 -0300
+
+    feat(payment): agrego payments.ts en services para agregar el create
+
+[33mcommit 9b650b89278610e8c272120bdbb33fcaf730e2a9[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 17:26:29 2026 -0300
+
+    feat(payment): agrego views/Payments.tsx agrega boton de cambio de estado y cancelar
+
+[33mcommit 85aa8ba04a068e3b4568ed30fd07c522967d1401[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 15 17:22:23 2026 -0300
+
+    feat(payment): agrego payment.ts para agregar UPDATE y DELETE
+
+[33mcommit 6518d0ee0202d3a78ae2600e090f61b415957907[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 19:21:27 2026 +0000
+
+    feat(locker): agrega getAll en LockerController
+
+[33mcommit df8630239965a467e3fd344a0833dd8dd7111d72[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 19:04:36 2026 +0000
+
+    feat(locker): implementa findAll en PostgresLockerRepository
+
+[33mcommit 867878a9422fd41425768b9c2d0fd464b491f9fa[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 18:51:05 2026 +0000
+
+    feat(locker): agrega caso de uso GetLockers
+
+[33mcommit 3a62daf2f56ced4761fb165ee2fc1779b02f2e8a[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 18:46:22 2026 +0000
+
+    feat(locker): agrega listado al puerto LockerRepository
+
+[33mcommit f2d8710fbe45b35952baaa76e462899ff5bd9bde[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 17:20:30 2026 +0000
+
+    fix(member): corrige import de UpdateMemberUseCase
+
+[33mcommit 3ece601555a9e468c8fe8188b9b25dbd85c3cb95[m
+Merge: a119e1d dad880a
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 17:00:56 2026 +0000
+
+    merge main into feature/locker-delete
+
+[33mcommit a119e1d6f5e75ee4974186fe6c0d9ad642b338d8[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 15 11:43:45 2026 +0000
+
+    feat(locker): registra ruta DELETE de Locker en app
+
+[33mcommit c74e0e653d1212cd3b4c44cd259797df4ef1d0ee[m[33m ([m[1;31morigin/feature/equipment-loan[m[33m)[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:51:55 2026 -0300
+
+    feat(equipment-loan): registro rutas de EquipmentLoan en app.ts
+
+[33mcommit 33ad69d8fbad45f96e2202a41c71ecdbab2be66a[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:44:20 2026 -0300
+
+    feat(equipment-loan): agrego EquipmentLoanController
+
+[33mcommit b6cfc928f861847a425e67802d88f1fabdc7b87a[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:42:35 2026 -0300
+
+    feat(equipment-loan): agrego PostgresEquipmentLoanRepository
+
+[33mcommit 3a05021a445cd9275855d3d8a375330e140b9bf9[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:40:39 2026 -0300
+
+    feat(equipment-loan): agrego caso de uso UpdateEquipmentLoanUseCase
+
+[33mcommit ce41bb19743e0529967cec01dae6d7ec750f9a22[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:39:24 2026 -0300
+
+    feat(equipment-loan): agrego caso de uso CreateEquipmentLoanUseCase
+
+[33mcommit 9b6e75848e0139609368721aab95cb38f5b83648[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:38:07 2026 -0300
+
+    feat(equipment-loan): agrego entidad de dominio EquipmentLoan con transitionTo
+
+[33mcommit 534c077fb03330331dc463111ded2b55bbd4de8e[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:36:08 2026 -0300
+
+    feat(equipment-loan): agrego puerto de salida EquipmentLoanRepository
+
+[33mcommit ddece2aa879a0933782d83d18e30b12fa4808d21[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:34:01 2026 -0300
+
+    feat(equipment-loan): agrego modelo EquipmentLoan al schema de Prisma
+
+[33mcommit 6bd5c931873187cc4f95ac0643facd7ab71363ae[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 20:24:48 2026 +0000
+
+    feat(locker): agrega delete en LockerController
+
+[33mcommit 1c364ef78c395d18a1aa68899c602a1eec29f846[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 20:06:30 2026 +0000
+
+    feat(locker): implementa baja logica en PostgresLockerRepository
+
+[33mcommit 9c30f84aa12d78e4e90f26ee7ccd7ad7c12cd07a[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 19:58:16 2026 +0000
+
+    feat(locker): agrega caso de uso DeleteLocker
+
+[33mcommit c583f0c3b36a80e4eac1692e42decba22b91b561[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 16:48:26 2026 -0300
+
+    feat(equipment-loan): agrego tipos EquipmentLoan en shared
+
+[33mcommit b15921a64ff0599449f6ce57b7fe6c69ed1cf0c1[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 19:42:28 2026 +0000
+
+    feat(locker): agrega baja logica al puerto LockerRepository
+
+[33mcommit c5e1971ed2a949ea0b483fe86ec085c3499cad81[m[33m ([m[1;31morigin/feature/locker-update[m[33m)[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:25:40 2026 +0000
+
+    feat(locker): registro rutas y dependencias de Locker en app
+
+[33mcommit cfac6af34c840715d1c21ebbc6b0ed3cd98dd15d[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:21:38 2026 +0000
+
+    feat(locker): implemento LockerController para alta y modificacion
+
+[33mcommit 10b2147d68d4ba7d027f36057ecee32d9728f424[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:18:09 2026 +0000
+
+    feat(locker): implemento PostgresLockerRepository
+
+[33mcommit 620c14438a52fa1f9d0b428e581641e9d9bad94e[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 17:07:46 2026 +0000
+
+    feat(locker): agrego caso de uso UpdateLocker
+
+[33mcommit c957d9efa93741202dd62d0b49bce5606d5b7111[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 16:54:14 2026 +0000
+
+    feat(locker): agrego caso de uso CreateLocker
+
+[33mcommit 2afcb1b31e3d8603a1ce24a205293bc17fad514a[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 16:48:50 2026 +0000
+
+    feat(locker): agrego validador de dominio para Locker
+
+[33mcommit e744452af952bc722bd23c41f04406980e6d7345[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 16:33:26 2026 +0000
+
+    feat(locker): agrego puerto de salida LockerRepository
+
+[33mcommit 84a76425458400f874d5dd2e341fe2b8556d7d16[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 16:08:11 2026 +0000
+
+    feat(locker): agrego tipos y contratos de Locker al paquete shared
+
+[33mcommit dad880aa747156f869769b2743090dbeb8203168[m
+Merge: 7d12a09 fec36bc
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Thu May 14 12:44:41 2026 -0300
+
+    Merge pull request #25 from ValentinaPertile/feature/payment-update
+    
+    feat(payment): implemento Alta y Modificación de Payment
+
+[33mcommit 62dc6828a0cd8fb50d264917d8af5ba804878ea4[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Thu May 14 15:11:22 2026 +0000
+
+    feat(locker): agrego modelo Locker al schema de Prisma
+
+[33mcommit fec36bc1045573662af0386fb8b9b6e5e73aba13[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 19:01:29 2026 -0300
+
+    feat(payment): agrego payments en el modelo Member del Schema para que prisma los reconozca
+
+[33mcommit d961d3753f6857a659ccf8f48952901ba2095b26[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 18:56:33 2026 -0300
+
+    feat(payment): arreglo UpdatePaymentUseCase
+
+[33mcommit b5d653ced543e44919f58e06eb5a8bdc004700f4[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 18:30:09 2026 -0300
+
+    feat(payment): implemento el controller de Payment
+
+[33mcommit 46d946619d7cd1b28345c84a098d5b0e0bd4d11d[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 18:27:33 2026 -0300
+
+    feat(payment): implemento PostgresPaymentRepository
+
+[33mcommit 2512729558ee8b14d257bf52bc59933090ff9166[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 17:54:05 2026 -0300
+
+    feat(payment): agrego caso de uso UpdatePayment basándome en CreatePayment
+
+[33mcommit b009a9a7cfbe51cf6c62924b167bb74eda39a937[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 17:51:44 2026 -0300
+
+    feat(payment): agrego caso de uso CreatePayment
+
+[33mcommit f4bd890b4384156ebcbdc27b80ed73b146fe3725[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 17:46:50 2026 -0300
+
+    feat(payment): agrego entidad de dominio Payment con su lógica de estados, además cambio rutas incorrectas de PostgresPaymentRepository y PaymentController
+
+[33mcommit f5c8d27d2ba9c2e3073f05ff1956fdb8914c1f16[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 14:23:53 2026 -0300
+
+    feat(payment): corrijo resolución de imports del paquete shared en tsconfig.json
+
+[33mcommit 5585337b540e4f8c1203d919609104480029d8a7[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 14:13:29 2026 -0300
+
+    feat(payment): agregar puerto de salida PaymentRepository
+
+[33mcommit 78f4e67b77fe8c3cbb8ee27faa39e1b9f3ca00d7[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Wed May 13 10:56:43 2026 -0300
+
+    feat(payment): registro rutas y dependencias de Payment en app.ts
+
+[33mcommit 3a588987856c6c313a1732d35f48c13707953201[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 10 23:07:18 2026 -0300
+
+    feat(payment): agrego tipos y contratos de Payment al paquete shared en index.ts
+
+[33mcommit 5e8529c0f3f7c6cce2339be7e982440ab2dba16c[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 10 22:54:30 2026 -0300
+
+    feat(payment): agrego modelo Payment al schema de Prisma
+
+[33mcommit 7d12a098037ca60a637d1bd7e8bcc898ed50b999[m
+Merge: d84cdfb cc411da
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Wed May 6 22:27:46 2026 -0300
+
+    Merge pull request #24 from ValentinaPertile/docs/fix-equipment-loan-tdd
+    
+    Cambios en canceled_at TDD equipment-loan
+
+[33mcommit cc411dab0fcba780d139c41c76037a0c60dc69cf[m[33m ([m[1;31morigin/docs/fix-equipment-loan-tdd[m[33m)[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Wed May 6 22:21:57 2026 -0300
+
+    docs(tdd): agrego campo canceled_at en TDD_0019_update-equipment-loan
+
+[33mcommit 63fc10baf5ca3618d8cbb6daf72345b07fc6b7b4[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Wed May 6 22:18:43 2026 -0300
+
+    docs(tdd): agrego campo canceled_at en TDD_0018_new-equipment-loan
+
+[33mcommit 381cb876f3d8068889e364b7f4bd44577dd25cae[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 21:08:26 2026 -0300
+
+    docs(tdd): elimino TDD_0020 fusionado en TDD_0019
+
+[33mcommit e3aed2a91f009b0ccee5339ea065bea1fe27801d[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 21:08:07 2026 -0300
+
+    docs(tdd): fusiono update y delete en TDD_0019_update-equipment-loan
+
+[33mcommit d84cdfba42e488758dc1c853afdd68d5200822d5[m
+Merge: a64b675 6861a5b
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 20:45:45 2026 -0300
+
+    Merge pull request #22 from ValentinaPertile/fix/TDD
+    
+    Fix(tdd): actualizo id de los TDD y aclaro notación de Merge en Contributing.md
+
+[33mcommit 6861a5bc604f7c617a51589e7237b3b56c6d3a0c[m[33m ([m[1;31morigin/fix/TDD[m[33m, [m[1;32mfix/TDD[m[33m)[m
+Merge: 38a5e6a a64b675
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Tue May 5 20:27:27 2026 -0300
+
+    Merge branch 'main' into fix/TDD
+
+[33mcommit a64b675748293f187153e95bb3c3b8d65ec20d2c[m
+Merge: afdaab6 5e6c12e
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Tue May 5 20:23:49 2026 -0300
+
+    Merge pull request #23 from ValentinaPertile/docs/TDD-locker
+    
+    Actualizaciónn de tdd locker
+
+[33mcommit 5e6c12e9abc0c736092ab3df58fd1b41a810e8b9[m[33m ([m[1;31morigin/docs/TDD-locker[m[33m)[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 15:43:21 2026 +0000
+
+    docs(tdd): Arreglo el borrado logico de TDD_0012_delete-locker
+
+[33mcommit 30ec5a838dde9814027b2244d1b109bfdd11c4bc[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 15:37:20 2026 +0000
+
+    docs(tdd): Arregle el borrado logico y correji MD de TDD_0011_update-locker
+
+[33mcommit 72750fcbb6948113bef1fecaef8a1f52c993ede3[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Tue May 5 12:27:25 2026 +0000
+
+    docs(tdd): arreglo borrado logico TDD_0010_new-locker
+
+[33mcommit afdaab6f5460c0c1f9c2a46c940b26b9c5e300ed[m
+Merge: d064027 07e3c79
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Mon May 4 18:34:55 2026 -0300
+
+    Merge pull request #21 from ValentinaPertile/docs/TDD-payment
+    
+    TDD-0004 — New Payment
+    
+    Se agregaron validaciones de rango para month (1–12)
+    Se incorporó la regla de negocio de pago duplicado: no se permite crear un pago activo con la misma fecha y miembro
+    Lo más importante, se incluyó cancelled_at: null
+    Se detallaron los pasos de implementación por capa
+    Algunos casos borde para que después puedan evaluar más en la próxima entrega
+    TDD-0005 — Update & Delete Payment
+    
+    Se fusionó el TDD-0006 (Delete) en este documento. El borrado lógico no tiene endpoint propio: cancelar un pago es enviar status: Canceled en PATCH /api/v1/payments/:id
+    Se agregó el campo cancelled_at al modelo de datos
+    Se eliminó el caso de uso DeletePayment ya que UpdatePayment cubre ambos escenarios.
+    Quedo pendiente a cualquier error que se me haya pasado.
+
+[33mcommit 38a5e6ab19240de2d7cdccbc488afc25eb5df455[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Mon May 4 18:13:57 2026 -0300
+
+    docs(contributing): aclaro el formato que usaremos para definir los merge
+
+[33mcommit 9cd55c7fc44cbd4ea2f15862a0db193d9a8ab8cc[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Mon May 4 18:11:42 2026 -0300
+
+    docs(tdd): corrijo los nombres de todos los TDD desde el TDDD New MedicalCertificate
+
+[33mcommit 07e3c791feb5c16ba003b3819a34e7a727edd26f[m[33m ([m[1;31morigin/docs/TDD-payment[m[33m, [m[1;32mdocs/TDD-payment[m[33m)[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Mon May 4 18:00:16 2026 -0300
+
+    docs(tdd): corrijo TDD_0005 Update Payment, ahora incluyo el Delete
+
+[33mcommit 3c7c1a66620b1a87664b0ad8ba79fa9f9681eda7[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Mon May 4 17:44:32 2026 -0300
+
+    docs(tdd): corrijo TDD_0004 Create Payment
+
+[33mcommit d0640275d1fa206c5c627898cbd2f395fd3b2d02[m[33m ([m[1;31morigin/docs/TDD-medicalCertificate[m[33m, [m[1;32mdocs/TDD-medicalCertificate[m[33m)[m
+Merge: e680e06 7fd1d24
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sun May 3 17:19:28 2026 -0300
+
+    docs(changelog): Merge pull para agregar archivo changelog
+    
+    docs(changelog): agregro archivo changelog
+
+[33mcommit 7fd1d24c5bfede50237f149a4efeb4247918da5f[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 17:15:36 2026 -0300
+
+    docs(changelog): agregro archivo changelog
+
+[33mcommit e680e068385d272c9f39e67f802f26859a5d9f40[m
+Merge: 0cca9a7 e605eda
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 16:59:20 2026 -0300
+
+    Merge pull request #19 from ValentinaPertile/docs/TDD-payment
+    
+    docs(tdd): mejoro formato de TDD de Payment
+
+[33mcommit 0cca9a7acb4f99ed23490a4184232033107bf5c1[m
+Merge: 04cf429 c61034d
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 16:58:04 2026 -0300
+
+    Merge pull request #18 from ValentinaPertile/docs/TDD-medicalCertificate
+    
+    docs(tdd): mejoro formato de TDD de MedicalCertificate
+
+[33mcommit e605edaef9c18db075c5cbfb2135ff60205db8fe[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 16:54:25 2026 -0300
+
+    docs(tdd): mejoro formato de TDD de Payment
+
+[33mcommit c61034d3ce142687f6071f21ac1e6ec2374f4745[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 16:50:31 2026 -0300
+
+    docs(tdd): mejoro formato de TDD de MedicalCertificate
+
+[33mcommit 04cf429c17f1dda2c62af00d52fc8762ba528377[m
+Merge: 8512618 85a91da
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sun May 3 16:48:40 2026 -0300
+
+    docs(team charter) : agrego TEAM_charter
+    
+    docs: agrego TEAM_CHARTER
+
+[33mcommit 85a91da4ab509929e0c90a9b167940a7c9af4267[m[33m ([m[1;31morigin/docs/team-charter[m[33m)[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 16:41:37 2026 -0300
+
+    docs: agrego TEAM_CHARTER
+
+[33mcommit 85126189e6f9aa393c6daa492bb62b4cabb87cec[m
+Merge: d7e3827 bed3ded
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sun May 3 16:25:17 2026 -0300
+
+    docs(TDD): Corrige el TDD de locker
+    
+    docs(TDD): Corrige el TDD de locker
+
+[33mcommit d7e3827a4e85b242538240af701f2eb4b80cc1f8[m
+Merge: 230a20d 2e7d07a
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 16:10:21 2026 -0300
+
+    Merge pull request #15 from ValentinaPertile/docs/TDD-locker
+    
+    docs(TDD): Corrijolos Tdds de sport
+
+[33mcommit bed3dedf907732c3a9793cbdc664fe0db43406c1[m[33m ([m[1;31morigin/docs/TDD-sport[m[33m)[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:55:29 2026 +0000
+
+    docs(tdd): corrige TDD_0015_delete-sport
+
+[33mcommit 0cc0590c671fdf66d176932ab8afd8b448a633fd[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:50:21 2026 +0000
+
+    docs(tdd): corrige TDD_0014_update-sport
+
+[33mcommit ee5aab26e46e7c8450a536d34884bf68748e4968[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:40:38 2026 +0000
+
+    docs(tdd): corrige TDD_0013_new-sport
+
+[33mcommit 2e7d07ae82b5ae2abb20946d5164fb8470d1d9f2[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:23:40 2026 +0000
+
+    docs(tdd): corrige TDD_0012_delete-locker
+
+[33mcommit a59f280d1d6025d17cdb072739fb25c6db8f32c5[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:20:52 2026 +0000
+
+    docs(tdd): corrige TDD_0011_update-locker
+
+[33mcommit 9e878a845371677a13e9853de20cd68f0a9477d8[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 18:15:35 2026 +0000
+
+    docs(tdd): corrige TDD_0010_new-locker
+
+[33mcommit 320548e99d235116554c22c1df4c9f65e731ccdc[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 17:22:39 2026 +0000
+
+    docs(tdd): corrige TDD_0011_update-locker
+
+[33mcommit 290d18a08d7784e5c690ea620258dcea72d48389[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 17:02:32 2026 +0000
+
+    docs(tdd): corrige TDD_0010_new-locker
+
+[33mcommit 230a20da54fb30bdb022a8f1ba7bc997e0817162[m
+Merge: c164b2e 13c26d8
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sun May 3 13:10:17 2026 -0300
+
+    Merge pull request #14 from ValentinaPertile/docs/TDD-equipmentLoan
+    
+    docs(tdd): corrigo TDD_0021 borrado lógico con status Canceled
+
+[33mcommit 13c26d8288aad4b9f1d167f56a1793e5b94ff053[m[33m ([m[1;31morigin/docs/TDD-equipmentLoan[m[33m)[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 13:01:36 2026 -0300
+
+    docs(tdd): corrigo TDD_0021 borrado lógico con status Canceled
+
+[33mcommit c164b2ed4c3f18726de75035e9c0c3df0b87de49[m
+Merge: 904d4cc 43050d4
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 12:56:58 2026 -0300
+
+    Merge pull request #13 from ValentinaPertile/docs/TDD-medicalCertificate
+    
+    docs(tdd): actualizo TDD_0008 para garantizar integridad de datos en …
+
+[33mcommit 43050d475c267f01aebae02002d30944cf22ebfb[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 12:52:40 2026 -0300
+
+    Cambio body response en los TDD de MedicalCertificate
+
+[33mcommit c98f13545ca0469092cda1b01aa99bccc1633d2d[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 12:44:01 2026 -0300
+
+    Agrego body responde en los TDD de Payment
+
+[33mcommit f643d6be1a036f41fdb1c628a6d8236bc26404f3[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 15:38:52 2026 +0000
+
+    docs(tdd): corrige TDD_0012_delete-locker
+
+[33mcommit 2e821a5501b1645029cf49e01cfc4620974e0ff2[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 15:23:24 2026 +0000
+
+    docs(tdd): corrige formato de TDD_0011_update-locker
+
+[33mcommit 3f6b221351c828492700370a59299acab9027384[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 11:32:36 2026 -0300
+
+    docs(tdd): actualizo TDD_0008 para garantizar integridad de datos en actualizaciones parciales (PATCH)
+
+[33mcommit 904d4cc16d83bdd0765500b54ff6c648b828e3ae[m
+Merge: 5a2c251 22f71af
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sun May 3 11:04:59 2026 -0300
+
+    Merge pull request #9 from ValentinaPertile/docs/TDD-locker
+    
+    docs(tdd): Agrego los TDDs de locker
+
+[33mcommit 5a2c2511536f905c89c1d6118f1ae589c00459a3[m
+Merge: 65be8af df71f68
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 10:58:08 2026 -0300
+
+    Merge pull request #12 from ValentinaPertile/docs/TDD-payment
+    
+    docs(tdd): actualizo TDD_0005
+
+[33mcommit 65be8af5a51a3dd5b1655ccd347cc8dcdb16529e[m
+Merge: 054c597 b1e46cc
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 10:48:27 2026 -0300
+
+    Merge pull request #11 from ValentinaPertile/docs/TDD-sport
+    
+    docs(tdd): agrego TDDs de Sport
+
+[33mcommit df71f68e0274c32b49ddb9433388463c379068bd[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Sun May 3 10:42:21 2026 -0300
+
+    docs(tdd): actualizo TDD_0005
+
+[33mcommit 22f71af5e032e19063c0fe3ed45122341bd7d5b5[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 01:11:09 2026 +0000
+
+    docs(tdd): actualiza contrato de TDD_0012_delete-locker
+
+[33mcommit 99da0935550643c40fd66c35da5eae4706ad3080[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 01:08:27 2026 +0000
+
+    docs(tdd): actualiza contrato de TDD_0011_update-locker y correcion de errores
+
+[33mcommit 08a5c30ecea8485017dea034a77fc0089246d7f5[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 00:23:40 2026 +0000
+
+    docs(tdd): corrige contrato de TDD_0010_new-locker
+
+[33mcommit 6371f9bce204a20ddd170fa6a0b5457a5472e87f[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 00:14:39 2026 +0000
+
+    docs(tdd): corrige contrato de TDD_0010_new-locker
+
+[33mcommit b1e46cc85ac9ede5de1e223acd9a171769be6417[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 00:01:17 2026 +0000
+
+    docs(tdd): agrego errores y plan de TDD_0015_delete-sport
+
+[33mcommit 287fd4bbfb9ac355139e94ef1ff39134bee04b8c[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sun May 3 00:00:12 2026 +0000
+
+    docs(tdd): agrego diseño tecnico de TDD_0015_delete-sport
+
+[33mcommit 320ce5f41e104f4d0d1a0d46c4369ea5c38fd217[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:58:17 2026 +0000
+
+    docs(tdd): completo PRD de TDD_0015_delete-sport
+
+[33mcommit 90e8dfc4745c1af652692d3a45955cc480f60a0c[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:54:54 2026 +0000
+
+    docs(tdd): agrego errores y plan de TDD_0014_update-sport
+
+[33mcommit cc3658f2f10a974ff12cee9f7e0bc4e6d70a1719[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:53:46 2026 +0000
+
+    docs(tdd): agrego diseño tecnico de TDD_0014_update-sport
+
+[33mcommit 11480b6f2a8642615fdd81f38918edd00853f9bf[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:50:44 2026 +0000
+
+    docs(tdd): completo PRD de TDD_0014_update-sport
+
+[33mcommit d2f05adffb39487ebabf19a3be6dcceaa5ba2117[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:42:24 2026 +0000
+
+    docs(tdd): agrego errores y plan de TDD_0013_new-sport
+
+[33mcommit 048430ff2db4f4ee55ce4b8e0e847246d2de87ad[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:27:02 2026 +0000
+
+    docs(tdd): agrego diseño tecnico de TDD_0013_new-sport
+
+[33mcommit b4f123ede11a75a2e3deaa72d7190a8d3cd416c0[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:16:51 2026 +0000
+
+    docs(tdd): completo PRD de TDD_0013_new-sport
+
+[33mcommit b11a49f6dfaf36bb78431b56f4c3b89b0a91c92d[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 23:02:04 2026 +0000
+
+    docs(tdd): corrijo nombre de TDD_0015_delete-sport
+
+[33mcommit 054c597ff1721fe058c829e07bc751ec360d736c[m
+Merge: 5dbd20e 08f6903
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sat May 2 18:13:01 2026 -0300
+
+    Merge pull request #5 from ValentinaPertile/docs/TDD-discipline
+
+[33mcommit 5dbd20eeaacbe68899b2b1647bb194d6c5a992e3[m
+Merge: 2ac50e1 56f3aba
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Sat May 2 18:10:49 2026 -0300
+
+    Merge pull request #10 from ValentinaPertile/docs/TDD-sport
+
+[33mcommit 56f3abae0c876032e6ff98653270dc3b3dbf0b60[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:39:55 2026 +0000
+
+    docs(tdd): creo TDDs de sport desde template
+
+[33mcommit 5f1e6633aae9c1d3bdebdadf7a08cdf2f3e73de2[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:33:01 2026 +0000
+
+    docs(tdd): agrego errores y plan de TDD_0012_delete-locker
+
+[33mcommit baf62e14ab598cc96f691772bcbdbccd0568e867[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:28:40 2026 +0000
+
+    docs(tdd): agrego diseño tecnico de TDD_0012_delete-locker
+
+[33mcommit 1c9e8a3814371e67b2b31e809a060a5f86b5f65a[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:22:24 2026 +0000
+
+    docs(tdd): completo PRD de TDD_0012_delete-locker
+
+[33mcommit a22b899bf0a49534093942952d1003b26051485b[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:19:03 2026 +0000
+
+    docs(tdd): creo TDD_0012_delete-locker desde template
+
+[33mcommit f11aa937c36d35db37d51d140ee249b5602e3020[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:12:36 2026 +0000
+
+    docs(tdd): agrego errores y plan de TDD_0011_update-locker
+
+[33mcommit f2578658d0fcd83f5d4097eb153a65993661a129[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 03:10:59 2026 +0000
+
+    docs(tdd): agrego diseño tecnico de TDD_0011_update-locker
+
+[33mcommit 6073a4956b5e0d5a9e534659014aa8d117e69738[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Sat May 2 02:25:48 2026 +0000
+
+    docs(tdd): completo PRD de TDD_0011_update-locker
+
+[33mcommit 2ac50e14425da2e7f73ad602be1014dd4d7ef135[m
+Merge: 2ba54f7 f466746
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 1 23:20:29 2026 -0300
+
+    Merge pull request #8 from ValentinaPertile/docs/TDD-equipmentLoan
+    
+    docs(TDD): corrigo formato TDD_0019
+
+[33mcommit 460a569e32a19fae47a4e5c818797226d4efe107[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 23:51:39 2026 +0000
+
+    docs(tdd): creo TDD_0011_update-locker desde template
+
+[33mcommit 29bde50de50665addbc8fde0d3b39bbc5c38ce04[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 23:28:17 2026 +0000
+
+    docs(tdd): actualizo TDD_0010_new-locker
+
+[33mcommit f466746714150b07a8012453143e7cdff090111b[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 18:02:15 2026 -0300
+
+    docs(tdd): corrigo formato TDD_0019
+
+[33mcommit 2ba54f72dfc4a2460486d9a797f262ea3014d89e[m
+Merge: 7ccc146 011d9ee
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 1 18:00:40 2026 -0300
+
+    Merge pull request #7 from ValentinaPertile/docs/TDD-equipmentLoan
+
+[33mcommit 011d9ee234e073a18c0eade306d1e96d0b61d40a[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 17:52:26 2026 -0300
+
+    docs(tdd): corrigo formato frontmatter TDD_0019
+
+[33mcommit 7ccc1466f2f539dc6ec39185a0dd32e22ff0074b[m
+Merge: 26297e1 3e636ac
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 1 17:47:09 2026 -0300
+
+    Merge pull request #6 from ValentinaPertile/docs/TDD-equipmentLoan
+
+[33mcommit 3e636acc02208e8c20cefea4ece0224fbd9a1f11[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 17:42:36 2026 -0300
+
+    docs(tdd): corrigo nombre User Persona en TDD_0019, TDD_0020 y TDD_0021
+
+[33mcommit 08f69036b49ecdcac1d1df346ebe7665f4785186[m[33m ([m[1;31morigin/docs/TDD-discipline[m[33m)[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 17:39:51 2026 -0300
+
+    docs(tdd): corrigo nombre User Persona en TDD_0016, TDD_0017 y TDD_0018
+
+[33mcommit 20a4ca9dda8dd7c4b45655432dabc667599f8280[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 17:35:42 2026 -0300
+
+    docs(tdd): corrigo errores de TDD_0019 y TDD_0020_update-equipment-loan
+
+[33mcommit c8348bdc919c361d08a4087bd80e060368a88167[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:56:04 2026 -0300
+
+    docs(tdd): agrego TDD_0021_delete-equipment-loan
+
+[33mcommit 2e043a57bebb13a7be305f8df55e57b28b0c9cb8[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:53:21 2026 -0300
+
+    docs(tdd): agrego TDD_0020_update-equipment-loan
+
+[33mcommit 45988a70e46a6ac8d7516cea88358f8c6492f0c3[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:51:54 2026 -0300
+
+    docs(tdd): agrego TDD_0019_new-equipment-loan
+
+[33mcommit ffeff94dcec8e6eb4023702b2914e68376c89a84[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:29:44 2026 -0300
+
+    docs(tdd): agrego TDD_0018_delete-discipline
+
+[33mcommit 56036956f0a59b426b8c99d76d1e75c9f1912713[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:28:48 2026 -0300
+
+    docs(tdd): agrego TDD_0017_update-discipline
+
+[33mcommit b325c8c095554ae8f111417acf12ed2445ca1d05[m
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 16:23:03 2026 -0300
+
+    docs(tdd): agrego TDD_0016_new-discipline
+
+[33mcommit 26297e12a6fcc9703e9e1fe76912aeedcb72ec9c[m
+Merge: aa0d9d9 8744db4
+Author: ValentinaPertile <142842954+ValentinaPertile@users.noreply.github.com>
+Date:   Fri May 1 15:18:16 2026 -0300
+
+    Merge pull request #4 from ValentinaPertile/docs/TDD-medicalCertificate
+    
+    TDD del ABM de MedicalCertificate (create, update y delete). Cosas a tener en cuenta:
+    
+    1- A diferencia de Payment, en este caso el Delete está planteado como borrado físico. Quedaría validar si eso es lo esperado o si debería manejarse como borrado lógico.
+    
+    2- Además, actualicé los nombres de los TDD anteriores ya que me había olvidado de poner la extensión.
+    
+    3- Incluí validaciones de fechas y la regla de un solo certificado activo por socio.
+
+[33mcommit 8744db4d806bc545d346d8012680a0264dc17781[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 15:05:54 2026 -0300
+
+    docs(tdd): finalizo TDD_0009_delete-medical-certificate
+
+[33mcommit 239858b4964ce8b21651d2b138d825254d3366a9[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:52:29 2026 -0300
+
+    docs(tdd): agrego PRD a TDD_0009_delete-medical-certificate
+
+[33mcommit 0930e20f89569dc2b87b28484bec9c6cbbdaf633[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:49:15 2026 -0300
+
+    docs(tdd): agrego TDD_0009_delete-medical-certificate
+
+[33mcommit a82b42612007fef9f0fadfd1640f3e4d9bd6f041[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:48:23 2026 -0300
+
+    docs(tdd): finalizo TDD_0008_update-medical-certificate
+
+[33mcommit edb66cead40bd3e73ceb2b83df224238bfdd31c4[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:38:35 2026 -0300
+
+    docs(tdd): agrego TDD_0008_update-medical-certificate
+
+[33mcommit db9c2bb0b615321aaaffe7cbec8ace3ac5f1be12[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:33:21 2026 -0300
+
+    docs(tdd): corrigo errores (plan de implementación y response de api) de TDD_0007_new-medical-certificate
+
+[33mcommit 60b9dde68e99c8c38e31f4d647eb8bf1f97bf3cd[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 14:24:24 2026 -0300
+
+    docs(tdd): finalizo TDD_0007_new-medical-certificate
+
+[33mcommit 9cb19c41555eb610f5c6c5d812356de5dd7aeb00[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 13:35:23 2026 -0300
+
+    docs(tdd): agrego TDD_0007_new-medical-certificate
+
+[33mcommit aa0d9d96fc23ab3a10b84816952e76b1d24d4852[m
+Merge: 837ec03 e27c744
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 13:24:26 2026 -0300
+
+    Merge pull request #3 from ValentinaPertile/docs/TDD-payment
+    
+    docs(tdd): agrego TDD de New, Update, Delete de Payment
+
+[33mcommit e27c744d5db9e522db5e77340485e189ae7448b3[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 13:12:58 2026 -0300
+
+    docs(tdd): finalizo TDD_0006_delete-payment
+
+[33mcommit b92d93dc5a8be510ef90b773ab89c0364fde2354[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 13:08:54 2026 -0300
+
+    docs(tdd): agrego PRD TDD_0006_delete-payment
+
+[33mcommit a0f34dd42cf0dbcacd79a0c0a5c2d6c1ecdc819a[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 13:06:40 2026 -0300
+
+    docs(tdd): agrego TDD_0006_delete-payment
+
+[33mcommit ff23094c81e84bab5c31bf853f13be615d3789bf[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 13:02:05 2026 -0300
+
+    docs(tdd): finalizo TDD_005_update-payment
+
+[33mcommit 13da6ee21993681307cf39d9e3f7d520d578f4bd[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 12:50:59 2026 -0300
+
+    docs(tdd): agrego PRD a TDD_005_update-payment
+
+[33mcommit 14119266d082397d6f1eb5bbcb8c93cc9e4e4917[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 12:36:08 2026 -0300
+
+    docs(tdd): agrego TDD_005_update-payment
+
+[33mcommit 42c143269557820bcbaa9a713e800298324a24cd[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 12:32:04 2026 -0300
+
+    docs(tdd): finalizo TDD_004_new-payment
+
+[33mcommit a137fa583dd2f88156046f587e3272aa8c4764c1[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 12:30:09 2026 -0300
+
+    docs(tdd): agrego RFC a TDD_004_new-payment
+
+[33mcommit 359e82da78830722aebef3f30b4bb32a40e2ea8c[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 12:27:24 2026 -0300
+
+    docs(tdd): agrego PRD a TDD_004_new-payment
+
+[33mcommit 837ec033c4b5b96974f8c9c9d165d442ff473d54[m
+Merge: 901074f 2863b35
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 12:03:27 2026 -0300
+
+    Merge pull request #2 from ValentinaPertile/docs/TDD-locker
+    
+    docs(tdd): agrego TDD_0010_new-locker
+
+[33mcommit 901074f2b6d5c447352768038b81645f009a16ee[m
+Merge: 8b8f246 3d21465
+Author: Macarena-1973 <macarena.romero@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 11:53:39 2026 -0300
+
+    Merge pull request #1 from ValentinaPertile/docs/TDD-payment
+    
+    docs(tdd): agrego TDD_004_new-payment
+
+[33mcommit 2863b350328d97882f042fd68e0080bc16356bc9[m
+Author: Luana <luana.suarez@alu.frlp.utn.edu.ar>
+Date:   Fri May 1 14:51:47 2026 +0000
+
+    docs(tdd): agrego TDD_0010_new-locker
+
+[33mcommit 3d21465083c2ed1f1d80ff0e447093b23d1619aa[m
+Author: Valentina Pertile <valentinapertile@hotmail.com>
+Date:   Fri May 1 11:26:16 2026 -0300
+
+    docs(tdd): agrego TDD_004_new-payment
+
+[33mcommit 8b8f246b48f369a6e2ed18947eeedb3fb5a8951a[m
+Author: Rodrigo Jacznik <rodrigo.jacznik@501labs.com.ar>
+Date:   Wed Apr 29 15:21:00 2026 -0300
+
+    Agrega template para TDD
+
+[33mcommit db865c99d76a12ddde9def1b4fb25c22c52af3ce[m
+Author: Rodrigo Jacznik <rodrigo.jacznik@501labs.com.ar>
+Date:   Wed Apr 29 15:20:42 2026 -0300
+
+    Agrega DER
+
+[33mcommit 7118b9b678c7db0f3d35943ce0aea9330bfc1887[m
+Author: Rodrigo Jacznik <rodrigo.jacznik@501labs.com.ar>
+Date:   Wed Apr 29 14:24:54 2026 -0300
+
+    first commit
