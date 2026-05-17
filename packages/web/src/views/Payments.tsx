@@ -15,7 +15,7 @@ import {
 import { LuPlus, LuRefreshCw, LuCheck, LuX } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { paymentsService } from "../services/payments";
-import type { PaymentDTO, CreatePaymentRequest, PaymentStatus,MemberDTO} from "@alentapp/shared";
+import type { PaymentDTO, CreatePaymentRequest, MemberDTO} from "@alentapp/shared";
 import {
   DialogRoot,
   DialogContent,
@@ -37,14 +37,6 @@ import {
 } from "../components/ui/select";
 import { membersService } from "../services/members";
 
-const statusOptions = createListCollection({
-  items: [
-    { label: "Pendiente", value: "Pending" },
-    { label: "Pagado", value: "Paid" },
-    { label: "Cancelado", value: "Canceled" },
-  ],
-});
-
 export function PaymentsView() {
   const [payments, setPayments] = useState<PaymentDTO[]>([]);
   const [members, setMembers] = useState<MemberDTO[]>([]);
@@ -61,11 +53,6 @@ export function PaymentsView() {
     due_date: "",
     member_id: "",
   });
-
-  // Este actualiza el estado
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [updatingPayment, setUpdatingPayment] = useState<PaymentDTO | null>(null);
-  const [newStatus, setNewStatus] = useState<PaymentStatus>("Pending");
 
   const fetchPayments = async () => {
     setIsLoading(true);
@@ -100,12 +87,6 @@ export function PaymentsView() {
     setIsDialogOpen(true);
   };
 
-  const openUpdateModal = (payment: PaymentDTO) => {
-    setUpdatingPayment(payment);
-    setNewStatus(payment.status);
-    setIsUpdateOpen(true);
-  };
-
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -120,25 +101,26 @@ export function PaymentsView() {
     }
   };
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!updatingPayment) return;
+  const handleMarkAsPaid = async (payment: PaymentDTO) => {
     setIsSubmitting(true);
     try {
-      await paymentsService.update(updatingPayment.id, { status: newStatus });
-      setIsUpdateOpen(false);
+      await paymentsService.update(payment.id, { status: "Paid" });
       fetchPayments();
     } catch (err: any) {
-      alert(err.message || "Error al actualizar el pago");
+      alert(err.message || "Error al marcar como pagado");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (payment: PaymentDTO) => {
-    if (window.confirm(`¿Estás seguro de que deseas cancelar el pago de $${payment.amount} (${payment.month}/${payment.year})? Esta acción no se puede deshacer.`)) {
+  const handleCancel = async (payment: PaymentDTO) => {
+    if (
+      window.confirm(
+        `¿Estás seguro de que deseas cancelar el pago de $${payment.amount} (${payment.month}/${payment.year})? Esta acción no se puede deshacer.`
+      )
+    ) {
       try {
-        await paymentsService.delete(payment.id);
+        await paymentsService.update(payment.id, { status: "Canceled" });
         fetchPayments();
       } catch (err: any) {
         alert(err.message || "Error al cancelar el pago");
@@ -257,56 +239,13 @@ export function PaymentsView() {
           </form>
         </DialogContent>
       </DialogRoot>
-
-      {/* Modal actualizar estado */}
-      <DialogRoot open={isUpdateOpen} onOpenChange={(e) => setIsUpdateOpen(e.open)}>
-        <DialogContent>
-          <form onSubmit={handleUpdate}>
-            <DialogHeader>
-              <DialogTitle>Actualizar Estado del Pago</DialogTitle>
-            </DialogHeader>
-            <DialogBody>
-              <Stack gap="4">
-                <Text color="fg.muted" fontSize="sm">
-                  Pago de <strong>${updatingPayment?.amount.toLocaleString()}</strong> — {updatingPayment?.month}/{updatingPayment?.year}
-                </Text>
-                <Field label="Nuevo Estado" required>
-                  <SelectRoot
-                    collection={statusOptions}
-                    value={[newStatus]}
-                    onValueChange={(e) => setNewStatus(e.value[0] as PaymentStatus)}
-                  >
-                    <SelectTrigger>
-                      <SelectValueText placeholder="Seleccioná un estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusOptions.items.map((opt) => (
-                        <SelectItem item={opt} key={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </SelectRoot>
-                </Field>
-              </Stack>
-            </DialogBody>
-            <DialogFooter>
-              <DialogActionTrigger asChild>
-                <Button variant="outline">Cancelar</Button>
-              </DialogActionTrigger>
-              <Button type="submit" colorPalette="blue" loading={isSubmitting}>
-                Guardar Cambios
-              </Button>
-            </DialogFooter>
-            <DialogCloseTrigger />
-          </form>
-        </DialogContent>
-      </DialogRoot>
-
+ 
       <Stack gap="8">
         <Flex justify="space-between" align="center">
           <Stack gap="1">
-            <Heading size="2xl" fontWeight="bold">Administración de Pagos</Heading>
+            <Heading size="2xl" fontWeight="bold">
+              Administración de Pagos
+            </Heading>
             <Text color="fg.muted" fontSize="md">
               Gestioná los pagos de los socios del club.
             </Text>
@@ -320,14 +259,14 @@ export function PaymentsView() {
             </Button>
           </HStack>
         </Flex>
-
+ 
         {error && (
           <Box p="4" bg="red.50" color="red.700" borderRadius="md" border="1px solid" borderColor="red.200">
             <Text fontWeight="bold">Error:</Text>
             <Text>{error}</Text>
           </Box>
         )}
-
+ 
         <Box
           bg="bg.panel"
           borderRadius="xl"
@@ -348,7 +287,9 @@ export function PaymentsView() {
             <Center h="300px">
               <Stack align="center" gap="4">
                 <Text color="fg.muted">No se encontraron pagos.</Text>
-                <Button variant="ghost" onClick={fetchPayments}>Reintentar</Button>
+                <Button variant="ghost" onClick={fetchPayments}>
+                  Reintentar
+                </Button>
               </Stack>
             </Center>
           ) : (
@@ -361,7 +302,9 @@ export function PaymentsView() {
                   <Table.ColumnHeader py="4">Vencimiento</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Estado</Table.ColumnHeader>
                   <Table.ColumnHeader py="4">Fecha de Pago</Table.ColumnHeader>
-                  <Table.ColumnHeader py="4" textAlign="end">Acciones</Table.ColumnHeader>
+                  <Table.ColumnHeader py="4" textAlign="end">
+                    Acciones
+                  </Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -395,29 +338,39 @@ export function PaymentsView() {
                         : "-"}
                     </Table.Cell>
                     <Table.Cell textAlign="end">
-                      <HStack gap="2" justify="flex-end">
-                        {payment.status !== "Canceled" && (
-                          <>
-                            <IconButton
+                      {payment.status === "Canceled" ? (
+                        <Text color="fg.muted" fontSize="sm">
+                          {payment.cancelled_at
+                            ? new Date(payment.cancelled_at).toLocaleDateString()
+                            : "-"}
+                        </Text>
+                      ) : (
+                        <HStack gap="2" justify="flex-end">
+                          {payment.status === "Pending" && (
+                            <Button
                               variant="ghost"
                               size="sm"
-                              aria-label="Actualizar estado del pago"
-                              onClick={() => openUpdateModal(payment)}
+                              colorPalette="green"
+                              onClick={() => handleMarkAsPaid(payment)}
+                              disabled={isSubmitting}
                             >
-                              <LuCheck />
-                            </IconButton>
+                              <LuCheck /> Marcar como Pagado
+                            </Button>
+                          )}
+                          {(payment.status === "Pending" || payment.status === "Paid") && (
                             <IconButton
                               variant="ghost"
                               size="sm"
                               colorPalette="red"
                               aria-label="Cancelar pago"
-                              onClick={() => handleDelete(payment)}
+                              onClick={() => handleCancel(payment)}
+                              disabled={isSubmitting}
                             >
                               <LuX />
                             </IconButton>
-                          </>
-                        )}
-                      </HStack>
+                          )}
+                        </HStack>
+                      )}
                     </Table.Cell>
                   </Table.Row>
                 ))}
