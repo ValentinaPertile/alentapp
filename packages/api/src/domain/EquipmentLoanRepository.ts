@@ -5,4 +5,5 @@ export interface EquipmentLoanRepository {
   create(equipmentLoan: CreateEquipmentLoanRequest): Promise<EquipmentLoanDTO>;
   findById(id: string): Promise<EquipmentLoanDTO | null>;
   update(id: string, data: Partial<EquipmentLoanDTO>): Promise<EquipmentLoanDTO>;
+  findAll(): Promise<EquipmentLoanDTO[]>; // <-- Agregamos este contrato
 }
