@@ -38,6 +38,11 @@ import {
   createListCollection 
 } from "../components/ui/select";
 
+// Extendemos el DTO localmente para asegurarnos de que TypeScript no chille por la fecha de cancelación
+interface ExtendedEquipmentLoanDTO extends EquipmentLoanDTO {
+  canceled_at?: string | null;
+}
+
 const statusCategories = createListCollection({
   items: [
     { label: "Prestado", value: "Loaned" },
@@ -48,7 +53,7 @@ const statusCategories = createListCollection({
 });
 
 export function EquipmentLoansView() {
-  const [loans, setLoans] = useState<EquipmentLoanDTO[]>([]);
+  const [loans, setLoans] = useState<ExtendedEquipmentLoanDTO[]>([]);
   const [members, setMembers] = useState<MemberDTO[]>([]); // <-- Tipado correcto con MemberDTO
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,7 +112,7 @@ export function EquipmentLoansView() {
     setIsDialogOpen(true);
   };
 
-  const openEditModal = (loan: EquipmentLoanDTO) => {
+  const openEditModal = (loan: ExtendedEquipmentLoanDTO) => {
     setEditingLoanId(loan.id);
     fetchMembers();
     setFormData({
@@ -378,41 +383,50 @@ export function EquipmentLoansView() {
                         borderRadius="md" 
                         bg={
                           loan.status === 'Returned' ? 'green.50' : 
-                          loan.status === 'Loaned' ? 'blue.50' : 'red.50'
+                          loan.status === 'Loaned' ? 'blue.50' : 
+                          loan.status === 'Damaged' ? 'orange.50' : 'red.50'
                         } 
                         color={
                           loan.status === 'Returned' ? 'green.700' : 
-                          loan.status === 'Loaned' ? 'blue.700' : 'red.700'
+                          loan.status === 'Loaned' ? 'blue.700' : 
+                          loan.status === 'Damaged' ? 'orange.700' : 'red.700'
                         } 
                         fontSize="xs" 
                         fontWeight="bold"
                       >
                         {loan.status === 'Loaned' ? 'Prestado' : 
-                         loan.status === 'Returned' ? 'Devuelto' : 'Cancelado'}
+                         loan.status === 'Returned' ? 'Devuelto' : 
+                         loan.status === 'Damaged' ? 'Dañado' : 'Cancelado'}
                       </Box>
                     </Table.Cell>
                     <Table.Cell textAlign="end">
-                      <HStack gap="2" justify="flex-end">
-                        <IconButton 
-                          variant="ghost" 
-                          size="sm" 
-                          aria-label="Editar préstamo"
-                          onClick={() => openEditModal(loan)}
-                          disabled={loan.status === 'Canceled'} 
-                        >
-                          <LuPencil />
-                        </IconButton>
-                        <IconButton 
-                          variant="ghost" 
-                          size="sm" 
-                          colorPalette="red" 
-                          aria-label="Cancelar préstamo"
-                          onClick={() => handleDeleteLoan(loan.id, loan.item_name)}
-                          disabled={loan.status === 'Canceled'} 
-                        >
-                          <LuTrash2 />
-                        </IconButton>
-                      </HStack>
+                      {loan.status === 'Canceled' ? (
+                        <Text fontSize="xs" color="fg.muted" fontStyle="italic" pr="2">
+                          {loan.canceled_at 
+                            ? new Date(loan.canceled_at).toLocaleDateString('es-AR') 
+                            : new Date().toLocaleDateString('es-AR')}
+                        </Text>
+                      ) : (
+                        <HStack gap="2" justify="flex-end">
+                          <IconButton 
+                            variant="ghost" 
+                            size="sm" 
+                            aria-label="Editar préstamo"
+                            onClick={() => openEditModal(loan)}
+                          >
+                            <LuPencil />
+                          </IconButton>
+                          <IconButton 
+                            variant="ghost" 
+                            size="sm" 
+                            colorPalette="red" 
+                            aria-label="Cancelar préstamo"
+                            onClick={() => handleDeleteLoan(loan.id, loan.item_name)}
+                          >
+                            <LuTrash2 />
+                          </IconButton>
+                        </HStack>
+                      )}
                     </Table.Cell>
                   </Table.Row>
                 ))}
