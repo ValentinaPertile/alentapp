@@ -53,9 +53,9 @@ Entidad existente `PAYMENT`:
   amount: number;
   month: number;
   year: number;
-  due_date: string;  // "YYYY-MM-DD"
   payment_date?: string | null;
   member_id: string;
+  due_date?: string;
 }
 ```
 
@@ -92,9 +92,10 @@ Entidad existente `PAYMENT`:
 | `amount` no es número (ejemplo, `"abc"`) | Error de validación: tipo de dato inválido | 400 Bad Request |
 | `month` fuera de rango (< 1 o > 12) | Error de validación: mes inválido | 400 Bad Request |
 | `year` fuera de rango razonable | Error de validación: año inválido | 400 Bad Request |
-| Campos obligatorios ausentes (`amount`, `month`, `year`, `due_date`, `member_id`) | Error de validación: campo requerido faltante | 400 Bad Request |
+| Campos obligatorios ausentes (`amount`, `month`, `year`) | Error de validación: campo requerido faltante | 400 Bad Request |
 | Pago duplicado (mismo `member_id`, `month` y `year`, en estado no `Canceled`) | Error de negocio: ya existe un pago activo para ese socio en ese período | 409 Conflict |
- 
+ | Usuario no provee `due_date`| El sistema calcula automáticamente `due_date` como día 10 del mes siguiente. Ejemplo: `month`=5, `year`=2026 → `due_date`="2026-06-10" | 201 Created |
+ | `month`=12, `year`=2025 sin `due_date`| El sistema calcula correctamente el año siguiente: `due_date`="2026-01-10" | 201 Created |
  
 ## Plan de Implementación
  
@@ -110,6 +111,7 @@ Entidad existente `PAYMENT`:
 - Recibir el comando con los datos del DTO.
 - Validar que el `member_id` corresponde a un socio existente usando el puerto `MemberRepository.findById`. Si no existe, lanzar `MemberNotFoundException`.
 - Validar mediante `PaymentRepository.findByMemberMonthYear` que no exista ya un pago activo (no `Canceled`) para ese socio en el mismo `month`/`year`. Si existe, lanzar `DuplicatePaymentException`.
+- Calcular `due_date`
 - Construir la entidad `Payment` con los datos validados, `status = "Pending"` y `cancelled_at = null`.
 - Persistir usando `PaymentRepository.create`.
 - Retornar el `Payment` creado.
