@@ -8,14 +8,14 @@ export class UpdatePaymentUseCase {
     ) {}
 
     async execute(id: string, newStatus: PaymentStatus): Promise<PaymentDTO> {
-                // 1. Validar existencia del pago
+                // 1. Validar existencia del pago (id inexistente)
                 const dto = await this.paymentRepo.findById(id);
                 if (!dto) {
                     throw new Error('El pago no existe');
                 }
          
                 // 2. Construir la entidad de dominio e invocar transitionTo
-                //    — transitionTo maneja idempotencia y validación de transiciones
+                // La función transitionTo en domain/services/Payment.ts maneja idempotencia y validación de transiciones
                 const payment = new Payment(dto);
                 payment.transitionTo(newStatus);
          
