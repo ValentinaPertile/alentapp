@@ -123,6 +123,20 @@ export function LockersView() {
     ],
   });
 
+  const getMemberNameById = (memberId: string | null) => {
+  if (!memberId) {
+    return "Sin asignar";
+  }
+
+  const member = members.find((item) => item.id === memberId);
+
+  if (!member) {
+    return "Socio no encontrado";
+  }
+
+  return `${member.name} — DNI: ${member.dni}`;
+};
+
   const filteredLockers = lockers.filter((locker) => {
     const matchesNumber =
       numberSearch.trim() === "" ||
@@ -541,7 +555,7 @@ export function LockersView() {
                       </Box>
                     </Table.Cell>
                     <Table.Cell color="fg.muted">
-                      {locker.member_id || "Sin asignar"}
+                       {getMemberNameById(locker.member_id)}
                     </Table.Cell>
                     <Table.Cell textAlign="end">
                       <HStack gap="2" justify="flex-end">
