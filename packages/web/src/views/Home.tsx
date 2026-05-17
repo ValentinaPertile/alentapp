@@ -1,5 +1,5 @@
 import { Box, SimpleGrid, Heading, Text, VStack } from "@chakra-ui/react";
-import { LuCreditCard, LuUsers } from "react-icons/lu";
+import { LuCreditCard, LuUsers, LuBox } from "react-icons/lu";
 import { SectionCard } from "../components/SectionCard";
 
 export function HomeView() {
@@ -34,7 +34,7 @@ export function HomeView() {
           title="Casilleros"
           description="Gestiona el alta, modificación, disponibilidad y baja lógica de los casilleros del club."
           to="/lockers"
-          icon={LuArchive}
+          icon={LuBox}
         />
 
         <SectionCard
