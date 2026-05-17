@@ -11,7 +11,7 @@ function toDTO(p: any): PaymentDTO {
         month:        p.month,
         year:         p.year,
         status:       p.status,
-        due_date:     p.due_date.toISOString().split('T')[0],
+        due_date:     p.due_date ? p.due_date.toISOString().split('T')[0] : null,
         payment_date: p.payment_date ? p.payment_date.toISOString() : null,
         cancelled_at: p.cancelled_at ? p.cancelled_at.toISOString() : null,
         member_id:    p.member_id,
@@ -40,6 +40,14 @@ export class PostgresPaymentRepository implements PaymentRepository {
             },
         });
         return toDTO(payment);
+    }
+
+    //puse acá el findall() para implementar el GET
+    async findAll(): Promise<PaymentDTO[]> {
+        const payments = await this.prisma.payment.findMany({
+            orderBy: [{ year: 'desc' }, { month: 'desc' }],
+        });
+        return payments.map(toDTO);
     }
 
     async findById(id: string): Promise<PaymentDTO | null> {
