@@ -19,9 +19,11 @@ export class PaymentController {
             const payments = await this.getPaymentsUseCase.execute();
             return reply.status(200).send({ data: payments });
         } catch (error: any) {
-            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
+            console.error('PAYMENT_ERROR:', error.message, error.stack);
+            return reply.status(500).send({ error: error.message });
         }
     }
+    
     async create(
         request: FastifyRequest<{ Body: CreatePaymentRequest }>,
         reply: FastifyReply,
