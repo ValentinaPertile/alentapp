@@ -15,12 +15,14 @@ import {
 import { LuPlus, LuPencil, LuTrash2, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { lockersService } from "../services/lockers";
+import { membersService } from "../services/members";
 import type {
   LockerDTO,
   CreateLockerRequest,
   UpdateLockerRequest,
   LockerLocation,
   LockerStatus,
+  MemberDTO,
 } from "@alentapp/shared";
 import {
   DialogRoot,
@@ -66,6 +68,7 @@ const lockerStatusFilters = createListCollection({
     { label: "Disponible", value: "Available" },
     { label: "Asignado", value: "Assigned" },
     { label: "Mantenimiento", value: "Maintenance" },
+    { label: "Dado de baja", value: "Canceled" },
   ],
 });
 
@@ -92,6 +95,7 @@ const initialFormData: CreateLockerRequest & {
 
 export function LockersView() {
   const [lockers, setLockers] = useState<LockerDTO[]>([]);
+  const [members, setMembers] = useState<MemberDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,13 +109,72 @@ export function LockersView() {
   const [statusFilter, setStatusFilter] = useState<LockerStatus | "All">("All");
   const [locationFilter, setLocationFilter] = useState<LockerLocation | "All">("All");
 
+  const activeMembers = members.filter((member) => {
+    const status = String(member.status).toLowerCase();
+    return status !== "cancelado" && status !== "canceled";
+  });
+
+  const memberOptions = createListCollection({
+    items: [
+      { label: "Sin asignar", value: "none" },
+      ...activeMembers.map((member) => ({
+        label: `${member.name} — DNI: ${member.dni}`,
+        value: member.id,
+      })),
+    ],
+  });
+
+  const getMemberNameById = (memberId: string | null) => {
+    if (!memberId) {
+      return "Sin asignar";
+    }
+
+    const member = members.find((item) => item.id === memberId);
+
+    if (!member) {
+      return "Socio no encontrado";
+    }
+
+    return `${member.name} — DNI: ${member.dni}`;
+  };
+
+  const getLockerStatusLabel = (status: LockerStatus) => {
+    if (status === "Available") return "Disponible";
+    if (status === "Assigned") return "Asignado";
+    if (status === "Maintenance") return "Mantenimiento";
+    if (status === "Canceled") return "Dado de baja";
+    return status;
+  };
+
+  const getLockerStatusColors = (status: LockerStatus) => {
+    if (status === "Available") {
+      return { bg: "green.50", color: "green.700" };
+    }
+
+    if (status === "Assigned") {
+      return { bg: "orange.50", color: "orange.700" };
+    }
+
+    if (status === "Maintenance") {
+      return { bg: "blue.50", color: "blue.700" };
+    }
+
+    return { bg: "red.50", color: "red.700" };
+  };
+
+  const formatDate = (date: string | null) => {
+    if (!date) return "-";
+
+    const [year, month, day] = date.split("-");
+    return `${Number(day)}/${Number(month)}/${year}`;
+  };
+
   const filteredLockers = lockers.filter((locker) => {
     const matchesNumber =
       numberSearch.trim() === "" ||
       locker.number.toString().includes(numberSearch.trim());
 
-    const matchesStatus =
-      statusFilter === "All" || locker.status === statusFilter;
+    const matchesStatus = statusFilter === "All" || locker.status === statusFilter;
 
     const matchesLocation =
       locationFilter === "All" || locker.location === locationFilter;
@@ -139,6 +202,15 @@ export function LockersView() {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const data = await membersService.getAll();
+      setMembers(data);
+    } catch (err: any) {
+      alert(err.message || "Error al cargar los socios");
+    }
+  };
+
   const openCreateModal = () => {
     setEditingLockerId(null);
     setFormData(initialFormData);
@@ -146,6 +218,11 @@ export function LockersView() {
   };
 
   const openEditModal = (locker: LockerDTO) => {
+    if (locker.status === "Canceled" || locker.deleted_at) {
+      alert("No se puede modificar un casillero dado de baja");
+      return;
+    }
+
     setEditingLockerId(locker.id);
     setFormData({
       number: locker.number,
@@ -189,6 +266,11 @@ export function LockersView() {
   };
 
   const handleDeleteLocker = async (locker: LockerDTO) => {
+    if (locker.status === "Canceled" || locker.deleted_at) {
+      alert("El casillero ya fue dado de baja");
+      return;
+    }
+
     if (
       window.confirm(
         `¿Estás seguro de que deseas dar de baja el casillero N° ${locker.number}?`
@@ -205,6 +287,7 @@ export function LockersView() {
 
   useEffect(() => {
     fetchLockers();
+    fetchMembers();
   }, []);
 
   return (
@@ -230,12 +313,7 @@ export function LockersView() {
           </HStack>
         </Flex>
 
-        <Box
-          p="4"
-          bg="bg.panel"
-          borderRadius="xl"
-          borderWidth="1px"
-        >
+        <Box p="4" bg="bg.panel" borderRadius="xl" borderWidth="1px">
           <Stack gap="4">
             <Flex justify="space-between" align="center">
               <Stack gap="0">
@@ -384,17 +462,34 @@ export function LockersView() {
                       </SelectRoot>
                     </Field>
 
-                    <Field label="ID del socio asignado">
-                      <Input
-                        placeholder="UUID del socio o vacío si está disponible"
-                        value={formData.member_id || ""}
-                        onChange={(e) =>
+                    <Field label="Socio asignado">
+                      <SelectRoot
+                        collection={memberOptions}
+                        value={[formData.member_id || "none"]}
+                        onValueChange={(e) => {
+                          const selectedMemberId = e.value[0];
+
                           setFormData({
                             ...formData,
-                            member_id: e.target.value || null,
-                          })
-                        }
-                      />
+                            member_id:
+                              selectedMemberId === "none" ? null : selectedMemberId,
+                            status:
+                              selectedMemberId === "none" ? "Available" : "Assigned",
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValueText placeholder="Seleccione un socio" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {memberOptions.items.map((member) => (
+                            <SelectItem item={member} key={member.value}>
+                              {member.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </SelectRoot>
                     </Field>
                   </>
                 )}
@@ -479,54 +574,72 @@ export function LockersView() {
               </Table.Header>
 
               <Table.Body>
-                {filteredLockers.map((locker) => (
-                  <Table.Row key={locker.id} _hover={{ bg: "bg.muted/30" }}>
-                    <Table.Cell fontWeight="semibold" color="fg.emphasized">
-                      {locker.number}
-                    </Table.Cell>
-                    <Table.Cell color="fg.muted">{locker.location}</Table.Cell>
-                    <Table.Cell>
-                      <Box
-                        display="inline-block"
-                        px="2"
-                        py="0.5"
-                        borderRadius="md"
-                        bg={locker.status === "Available" ? "green.50" : "orange.50"}
-                        color={
-                          locker.status === "Available" ? "green.700" : "orange.700"
-                        }
-                        fontSize="xs"
-                        fontWeight="bold"
-                      >
-                        {locker.status}
-                      </Box>
-                    </Table.Cell>
-                    <Table.Cell color="fg.muted">
-                      {locker.member_id || "Sin asignar"}
-                    </Table.Cell>
-                    <Table.Cell textAlign="end">
-                      <HStack gap="2" justify="flex-end">
-                        <IconButton
-                          variant="ghost"
-                          size="sm"
-                          aria-label="Editar casillero"
-                          onClick={() => openEditModal(locker)}
+                {filteredLockers.map((locker) => {
+                  const statusColors = getLockerStatusColors(locker.status);
+
+                  return (
+                    <Table.Row key={locker.id} _hover={{ bg: "bg.muted/30" }}>
+                      <Table.Cell fontWeight="semibold" color="fg.emphasized">
+                        {locker.number}
+                      </Table.Cell>
+
+                      <Table.Cell color="fg.muted">{locker.location}</Table.Cell>
+
+                      <Table.Cell>
+                        <Box
+                          display="inline-block"
+                          px="2"
+                          py="0.5"
+                          borderRadius="md"
+                          bg={statusColors.bg}
+                          color={statusColors.color}
+                          fontSize="xs"
+                          fontWeight="bold"
                         >
-                          <LuPencil />
-                        </IconButton>
-                        <IconButton
-                          variant="ghost"
-                          size="sm"
-                          colorPalette="red"
-                          aria-label="Dar de baja casillero"
-                          onClick={() => handleDeleteLocker(locker)}
-                        >
-                          <LuTrash2 />
-                        </IconButton>
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+                          {getLockerStatusLabel(locker.status)}
+                        </Box>
+                      </Table.Cell>
+
+                      <Table.Cell color="fg.muted">
+                        {getMemberNameById(locker.member_id)}
+                      </Table.Cell>
+
+                      <Table.Cell textAlign="end">
+                        {locker.status === "Canceled" || locker.deleted_at ? (
+                          <Stack gap="1" align="end">
+                            <Text fontSize="sm" color="fg.muted">
+                              Fecha de baja:
+                            </Text>
+                            <Text fontSize="sm" color="fg.emphasized">
+                              {formatDate(locker.deleted_at)}
+                            </Text>
+                          </Stack>
+                        ) : (
+                          <HStack gap="2" justify="flex-end">
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              aria-label="Editar casillero"
+                              onClick={() => openEditModal(locker)}
+                            >
+                              <LuPencil />
+                            </IconButton>
+
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              colorPalette="red"
+                              aria-label="Dar de baja casillero"
+                              onClick={() => handleDeleteLocker(locker)}
+                            >
+                              <LuTrash2 />
+                            </IconButton>
+                          </HStack>
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
               </Table.Body>
             </Table.Root>
           )}

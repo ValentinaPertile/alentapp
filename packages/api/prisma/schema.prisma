@@ -49,6 +49,7 @@ enum LockerStatus {
     Available
     Assigned
     Maintenance
+    Canceled
 }
 
 enum LockerLocation {

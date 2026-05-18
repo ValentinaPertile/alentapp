@@ -36,7 +36,7 @@ export interface UpdateMemberRequest {
 // Locker
 // ============================================
 
-export type LockerStatus = 'Available' | 'Assigned' | 'Maintenance';
+export type LockerStatus = 'Available' | 'Assigned' | 'Maintenance' | 'Canceled' ;
 
 export type LockerLocation =
     | 'Hall'

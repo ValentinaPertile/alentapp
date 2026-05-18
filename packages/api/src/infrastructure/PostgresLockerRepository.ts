@@ -15,7 +15,7 @@ type DBLocker = {
     id: string;
     number: number;
     location: 'Hall' | 'Vestibulo' | 'Pasillo' | 'Gimnasio' | 'Administracion';
-    status: 'Available' | 'Assigned' | 'Maintenance';
+    status: 'Available' | 'Assigned' | 'Maintenance' | 'Canceled';
     member_id: string | null;
     deleted_at: Date | null;
 };
@@ -44,17 +44,14 @@ export class PostgresLockerRepository implements LockerRepository {
     }
 
     async findAll(): Promise<LockerDTO[]> {
-    const lockers = await prisma.locker.findMany({
-        where: {
-            deleted_at: null,
-        },
-        orderBy: {
-            number: 'asc',
-        },
-    });
+        const lockers = await prisma.locker.findMany({
+            orderBy: {
+                number: 'asc',
+            },
+        });
 
-    return lockers.map(this.mapToDTO);
-}
+        return lockers.map(this.mapToDTO);
+    }
 
     async findByNumber(number: number): Promise<LockerDTO | null> {
         const locker = await prisma.locker.findUnique({
@@ -92,15 +89,17 @@ export class PostgresLockerRepository implements LockerRepository {
     }
 
     async softDelete(id: string, deletedAt: Date): Promise<LockerDTO> {
-    const locker = await prisma.locker.update({
-        where: { id },
-        data: {
-            deleted_at: deletedAt,
-        },
-    });
+        const locker = await prisma.locker.update({
+            where: { id },
+            data: {
+                status: 'Canceled',
+                member_id: null,
+                deleted_at: deletedAt,
+            },
+        });
 
-    return this.mapToDTO(locker);
-}
+        return this.mapToDTO(locker);
+    }
 
     private mapToDTO(locker: DBLocker): LockerDTO {
         return {
@@ -109,7 +108,9 @@ export class PostgresLockerRepository implements LockerRepository {
             location: locker.location,
             status: locker.status,
             member_id: locker.member_id,
-            deleted_at: locker.deleted_at ? locker.deleted_at.toISOString().split('T')[0] : null,
+            deleted_at: locker.deleted_at
+                ? locker.deleted_at.toISOString().split('T')[0]
+                : null,
         };
     }
 }
