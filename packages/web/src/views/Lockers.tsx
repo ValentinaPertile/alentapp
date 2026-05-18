@@ -68,6 +68,7 @@ const lockerStatusFilters = createListCollection({
     { label: "Disponible", value: "Available" },
     { label: "Asignado", value: "Assigned" },
     { label: "Mantenimiento", value: "Maintenance" },
+    { label: "Dado de baja", value: "Canceled" },
   ],
 });
 
@@ -124,18 +125,49 @@ export function LockersView() {
   });
 
   const getMemberNameById = (memberId: string | null) => {
-  if (!memberId) {
-    return "Sin asignar";
-  }
+    if (!memberId) {
+      return "Sin asignar";
+    }
 
-  const member = members.find((item) => item.id === memberId);
+    const member = members.find((item) => item.id === memberId);
 
-  if (!member) {
-    return "Socio no encontrado";
-  }
+    if (!member) {
+      return "Socio no encontrado";
+    }
 
-  return `${member.name} — DNI: ${member.dni}`;
-};
+    return `${member.name} — DNI: ${member.dni}`;
+  };
+
+  const getLockerStatusLabel = (status: LockerStatus) => {
+    if (status === "Available") return "Disponible";
+    if (status === "Assigned") return "Asignado";
+    if (status === "Maintenance") return "Mantenimiento";
+    if (status === "Canceled") return "Dado de baja";
+    return status;
+  };
+
+  const getLockerStatusColors = (status: LockerStatus) => {
+    if (status === "Available") {
+      return { bg: "green.50", color: "green.700" };
+    }
+
+    if (status === "Assigned") {
+      return { bg: "orange.50", color: "orange.700" };
+    }
+
+    if (status === "Maintenance") {
+      return { bg: "blue.50", color: "blue.700" };
+    }
+
+    return { bg: "red.50", color: "red.700" };
+  };
+
+  const formatDate = (date: string | null) => {
+    if (!date) return "-";
+
+    const [year, month, day] = date.split("-");
+    return `${Number(day)}/${Number(month)}/${year}`;
+  };
 
   const filteredLockers = lockers.filter((locker) => {
     const matchesNumber =
@@ -186,6 +218,11 @@ export function LockersView() {
   };
 
   const openEditModal = (locker: LockerDTO) => {
+    if (locker.status === "Canceled" || locker.deleted_at) {
+      alert("No se puede modificar un casillero dado de baja");
+      return;
+    }
+
     setEditingLockerId(locker.id);
     setFormData({
       number: locker.number,
@@ -229,6 +266,11 @@ export function LockersView() {
   };
 
   const handleDeleteLocker = async (locker: LockerDTO) => {
+    if (locker.status === "Canceled" || locker.deleted_at) {
+      alert("El casillero ya fue dado de baja");
+      return;
+    }
+
     if (
       window.confirm(
         `¿Estás seguro de que deseas dar de baja el casillero N° ${locker.number}?`
@@ -532,54 +574,72 @@ export function LockersView() {
               </Table.Header>
 
               <Table.Body>
-                {filteredLockers.map((locker) => (
-                  <Table.Row key={locker.id} _hover={{ bg: "bg.muted/30" }}>
-                    <Table.Cell fontWeight="semibold" color="fg.emphasized">
-                      {locker.number}
-                    </Table.Cell>
-                    <Table.Cell color="fg.muted">{locker.location}</Table.Cell>
-                    <Table.Cell>
-                      <Box
-                        display="inline-block"
-                        px="2"
-                        py="0.5"
-                        borderRadius="md"
-                        bg={locker.status === "Available" ? "green.50" : "orange.50"}
-                        color={
-                          locker.status === "Available" ? "green.700" : "orange.700"
-                        }
-                        fontSize="xs"
-                        fontWeight="bold"
-                      >
-                        {locker.status}
-                      </Box>
-                    </Table.Cell>
-                    <Table.Cell color="fg.muted">
-                       {getMemberNameById(locker.member_id)}
-                    </Table.Cell>
-                    <Table.Cell textAlign="end">
-                      <HStack gap="2" justify="flex-end">
-                        <IconButton
-                          variant="ghost"
-                          size="sm"
-                          aria-label="Editar casillero"
-                          onClick={() => openEditModal(locker)}
+                {filteredLockers.map((locker) => {
+                  const statusColors = getLockerStatusColors(locker.status);
+
+                  return (
+                    <Table.Row key={locker.id} _hover={{ bg: "bg.muted/30" }}>
+                      <Table.Cell fontWeight="semibold" color="fg.emphasized">
+                        {locker.number}
+                      </Table.Cell>
+
+                      <Table.Cell color="fg.muted">{locker.location}</Table.Cell>
+
+                      <Table.Cell>
+                        <Box
+                          display="inline-block"
+                          px="2"
+                          py="0.5"
+                          borderRadius="md"
+                          bg={statusColors.bg}
+                          color={statusColors.color}
+                          fontSize="xs"
+                          fontWeight="bold"
                         >
-                          <LuPencil />
-                        </IconButton>
-                        <IconButton
-                          variant="ghost"
-                          size="sm"
-                          colorPalette="red"
-                          aria-label="Dar de baja casillero"
-                          onClick={() => handleDeleteLocker(locker)}
-                        >
-                          <LuTrash2 />
-                        </IconButton>
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+                          {getLockerStatusLabel(locker.status)}
+                        </Box>
+                      </Table.Cell>
+
+                      <Table.Cell color="fg.muted">
+                        {getMemberNameById(locker.member_id)}
+                      </Table.Cell>
+
+                      <Table.Cell textAlign="end">
+                        {locker.status === "Canceled" || locker.deleted_at ? (
+                          <Stack gap="1" align="end">
+                            <Text fontSize="sm" color="fg.muted">
+                              Fecha de baja:
+                            </Text>
+                            <Text fontSize="sm" color="fg.emphasized">
+                              {formatDate(locker.deleted_at)}
+                            </Text>
+                          </Stack>
+                        ) : (
+                          <HStack gap="2" justify="flex-end">
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              aria-label="Editar casillero"
+                              onClick={() => openEditModal(locker)}
+                            >
+                              <LuPencil />
+                            </IconButton>
+
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              colorPalette="red"
+                              aria-label="Dar de baja casillero"
+                              onClick={() => handleDeleteLocker(locker)}
+                            >
+                              <LuTrash2 />
+                            </IconButton>
+                          </HStack>
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
               </Table.Body>
             </Table.Root>
           )}
