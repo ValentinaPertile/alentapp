@@ -18,6 +18,7 @@ import { PostgresEquipmentLoanRepository } from './infrastructure/PostgresEquipm
 import { CreateEquipmentLoanUseCase } from './application/CreateEquipmentLoanUseCase.js';
 import { UpdateEquipmentLoanUseCase } from './application/UpdateEquipmentLoanUseCase.js';
 import { EquipmentLoanController } from './delivery/EquipmentLoanController.js';
+import { GetEquipmentLoansUseCase } from './application/GetEquipmentLoansUseCase.js';
 
 import { PostgresLockerRepository } from './infrastructure/PostgresLockerRepository.js';
 import { LockerValidator } from './domain/services/LockerValidator.js';
@@ -108,10 +109,13 @@ export function buildApp() {
 
     const createEquipmentLoanUseCase = new CreateEquipmentLoanUseCase(equipmentLoanRepo, memberRepo);
     const updateEquipmentLoanUseCase = new UpdateEquipmentLoanUseCase(equipmentLoanRepo);
+    const getEquipmentLoansUseCase = new GetEquipmentLoansUseCase(equipmentLoanRepo);
     const equipmentLoanController = new EquipmentLoanController(
         createEquipmentLoanUseCase,
         updateEquipmentLoanUseCase,
-    );
+        getEquipmentLoansUseCase,
+    ); 
+    
     server.post('/api/v1/equipment-loans', equipmentLoanController.create.bind(equipmentLoanController));
     server.patch('/api/v1/equipment-loans/:id', equipmentLoanController.update.bind(equipmentLoanController));
     server.delete('/api/v1/equipment-loans/:id', equipmentLoanController.delete.bind(equipmentLoanController));

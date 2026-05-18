@@ -350,7 +350,7 @@ export function PaymentsView() {
                               onClick={() => handleMarkAsPaid(payment)}
                               disabled={isSubmitting}
                             >
-                              Marcar como Pagado
+                              Cargar pago
                             </Button>
                           )}
                           {(payment.status === "Pending" || payment.status === "Paid") && (
