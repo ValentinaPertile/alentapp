@@ -61,4 +61,33 @@ describe('UpdateLockerUseCase', () => {
         expect(mockLockerRepo.update).toHaveBeenCalledWith('locker-1', updateData);
         expect(result.location).toBe('Gimnasio');
     });
+    it('debe permitir cambiar el estado de un casillero a Maintenance', async () => {
+        const updateData: UpdateLockerRequest = {
+            number: 10,
+            location: 'Hall',
+            status: 'Maintenance',
+            member_id: null,
+        };
+
+        const updatedLocker: LockerDTO = {
+            ...existingLocker,
+            status: 'Maintenance',
+        };
+
+        vi.mocked(mockLockerRepo.update).mockResolvedValueOnce(updatedLocker);
+
+        const result = await useCase.execute('locker-1', updateData);
+
+        expect(mockLockerRepo.findById).toHaveBeenCalledWith('locker-1');
+        expect(mockLockerValidator.validateNumber).toHaveBeenCalledWith(10);
+        expect(mockLockerValidator.validateLocation).toHaveBeenCalledWith('Hall');
+        expect(mockLockerValidator.validateStatus).toHaveBeenCalledWith('Maintenance');
+        expect(mockLockerValidator.validateNumberIsUnique).toHaveBeenCalledWith(10, 'locker-1');
+        expect(mockLockerValidator.validateStatusAndMember).toHaveBeenCalledWith('Maintenance', null);
+
+        expect(mockLockerRepo.update).toHaveBeenCalledWith('locker-1', updateData);
+        expect(result.status).toBe('Maintenance');
+    });
+
+
 });
