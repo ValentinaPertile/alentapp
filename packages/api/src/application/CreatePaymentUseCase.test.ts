@@ -28,6 +28,7 @@ describe('CreatePaymentUseCase', () => {
         vi.clearAllMocks();
     });
 
+    //test unitario 1 - happy path CreatePaymentUseCase
     it('1 - debe crear un pago y retornar el PaymentDTO cuando los datos son válidos', async () => {
         vi.mocked(mockMemberRepo.findById).mockResolvedValueOnce({
             id: '123e4567-e89b-12d3-a456-426614174000',
@@ -80,6 +81,7 @@ describe('CreatePaymentUseCase', () => {
         expect(result.id).toBe('aabbccdd-e89b-12d3-a456-426614174000');
     });
 
+    //test unitario 2 - member_id faltante
     it('2 - debe lanzar un error si falta el campo member_id', async () => {
         await expect(
             useCase.execute({
@@ -90,4 +92,27 @@ describe('CreatePaymentUseCase', () => {
             }),
         ).rejects.toThrow('El campo member_id es requerido');
     });
+
+    //test unitario 3 - amount inválido
+    it('3 - debe lanzar un error si el amount es cero o negativo', async () => {
+        await expect(
+            useCase.execute({
+                amount: 0,
+                month: 5,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('El monto debe ser mayor a cero');
+    
+        await expect(
+            useCase.execute({
+                amount: -100,
+                month: 5,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('El monto debe ser mayor a cero');
+    });
+
+
 });
