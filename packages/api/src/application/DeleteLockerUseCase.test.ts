@@ -86,4 +86,22 @@ describe('DeleteLockerUseCase', () => {
         expect(result.member_id).toBeNull();
     });
 
+    it('no debe permitir dar de baja un casillero que ya fue dado de baja', async () => {
+        const alreadyDeletedLocker: LockerDTO = {
+            ...existingLocker,
+            status: 'Canceled',
+            member_id: null,
+            deleted_at: '2026-05-24',
+        };
+
+        vi.mocked(mockLockerRepo.findById).mockResolvedValueOnce(alreadyDeletedLocker);
+
+        await expect(useCase.execute('locker-1'))
+            .rejects
+            .toThrow('El casillero ya fue dado de baja');
+
+        expect(mockLockerRepo.findById).toHaveBeenCalledWith('locker-1');
+        expect(mockLockerRepo.softDelete).not.toHaveBeenCalled();
+    });
+
 });
