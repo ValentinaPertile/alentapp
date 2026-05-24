@@ -68,4 +68,26 @@ describe('CreateLockerUseCase', () => {
 
         expect(result.status).toBe('Available');
     });
+    it('debe crear el casillero sin socio asignado y sin fecha de baja', async () => {
+        const mockRequest: CreateLockerRequest = {
+            number: 12,
+            location: 'Hall',
+        };
+
+        const mockLocker: LockerDTO = {
+            id: 'locker-3',
+            number: 12,
+            location: 'Hall',
+            status: 'Available',
+            member_id: null,
+            deleted_at: null,
+        };
+
+        vi.mocked(mockLockerRepo.create).mockResolvedValueOnce(mockLocker);
+
+        const result = await useCase.execute(mockRequest);
+
+        expect(result.member_id).toBeNull();
+        expect(result.deleted_at).toBeNull();
+    });
 });
