@@ -41,4 +41,16 @@ describe('Payment', () => {
         expect(payment.cancelled_at).not.toBeNull();
         expect(payment.payment_date).toBeNull();
     });
+
+    //test unitario 12 - transitionTo Canceled desde Paid
+    it('12 - transitionTo Canceled desde Paid debe cambiar status y setear cancelled_at', () => {
+        const payment = new Payment({ ...basePaymentData, status: 'Paid', payment_date: '2026-05-01T00:00:00.000Z' });
+
+        payment.transitionTo('Canceled');
+
+        expect(payment.status).toBe('Canceled');
+        expect(payment.cancelled_at).not.toBeNull();
+    });
+
+    
 });
