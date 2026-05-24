@@ -150,5 +150,38 @@ describe('CreatePaymentUseCase', () => {
         ).rejects.toThrow('MEMBER_NOT_FOUND');
     });
 
-
+    //test unitario 6 - pago duplicado
+    it('6 - debe lanzar un error si ya existe un pago activo para ese socio en ese período', async () => {
+        vi.mocked(mockMemberRepo.findById).mockResolvedValueOnce({
+            id: '123e4567-e89b-12d3-a456-426614174000',
+            dni: '12345678',
+            name: 'Juan Pérez',
+            email: 'juan@test.com',
+            birthdate: '1990-01-01',
+            category: 'Pleno',
+            status: 'Activo',
+            created_at: '2026-01-01T00:00:00.000Z',
+        });
+    
+        vi.mocked(mockPaymentRepo.findActiveByMemberMonthYear).mockResolvedValueOnce({
+            id: 'existing-payment-id',
+            amount: 1500,
+            month: 5,
+            year: 2026,
+            status: 'Pending',
+            due_date: '2026-06-10',
+            payment_date: null,
+            cancelled_at: null,
+            member_id: '123e4567-e89b-12d3-a456-426614174000',
+        });
+    
+        await expect(
+            useCase.execute({
+                amount: 1500,
+                month: 5,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('Ya existe un pago activo para ese socio en ese período');
+    });
 });
