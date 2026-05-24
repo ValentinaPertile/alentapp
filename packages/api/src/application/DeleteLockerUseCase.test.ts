@@ -45,4 +45,24 @@ describe('DeleteLockerUseCase', () => {
 
         expect(result).toEqual(deletedLocker);
     });
+    it('debe cambiar el estado del casillero a Canceled al darlo de baja', async () => {
+        const deletedLocker: LockerDTO = {
+            ...existingLocker,
+            status: 'Canceled',
+            member_id: null,
+            deleted_at: '2026-05-24',
+        };
+
+        vi.mocked(mockLockerRepo.softDelete).mockResolvedValueOnce(deletedLocker);
+
+        const result = await useCase.execute('locker-1');
+
+        expect(mockLockerRepo.findById).toHaveBeenCalledWith('locker-1');
+        expect(mockLockerRepo.softDelete).toHaveBeenCalledWith(
+            'locker-1',
+            expect.any(Date),
+        );
+
+        expect(result.status).toBe('Canceled');
+    });
 });
