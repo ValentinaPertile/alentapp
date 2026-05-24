@@ -203,4 +203,29 @@ describe('Locker API Integration Tests - Update', () => {
             expect(body.data.deleted_at).toBeNull();
         });
     });
+    it('debe permitir asignar un socio existente al casillero', async () => {
+        const payload: UpdateLockerRequest = {
+            number: 10,
+            location: 'Hall',
+            status: 'Assigned',
+            member_id: 'member-1',
+        };
+
+        const response = await app.inject({
+            method: 'PUT',
+            url: '/api/v1/lockers/locker-1',
+            payload,
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const body = JSON.parse(response.payload);
+
+        expect(body.data.id).toBe('locker-1');
+        expect(body.data.number).toBe(10);
+        expect(body.data.location).toBe('Hall');
+        expect(body.data.status).toBe('Assigned');
+        expect(body.data.member_id).toBe('member-1');
+        expect(body.data.deleted_at).toBeNull();
+    });
 });
