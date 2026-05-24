@@ -115,4 +115,24 @@ describe('CreatePaymentUseCase', () => {
     });
 
 
+    //test unitario 4 - month fuera de rango
+    it('4 - debe lanzar un error si el month está fuera de rango', async () => {
+        await expect(
+            useCase.execute({
+                amount: 1500,
+                month: 13,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('El mes debe estar entre 1 y 12');
+    
+        await expect(
+            useCase.execute({
+                amount: 1500,
+                month: 0,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('El mes debe estar entre 1 y 12');
+    });
 });
