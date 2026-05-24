@@ -7,9 +7,13 @@ vi.mock('../infrastructure/PostgresMemberRepository.js', () => {
         PostgresMemberRepository: class {
             async findAll() { return []; }
             async findById(id: string) {
-                return id === '123e4567-e89b-12d3-a456-426614174000'
-                    ? { id: '123e4567-e89b-12d3-a456-426614174000', name: 'Juan Pérez', dni: '12345678', email: 'juan@test.com', birthdate: '1990-01-01', category: 'Pleno', status: 'Activo', created_at: '2026-01-01T00:00:00.000Z' }
-                    : null;
+                if (id === '123e4567-e89b-12d3-a456-426614174000') {
+                    return { id: '123e4567-e89b-12d3-a456-426614174000', name: 'Juan Pérez', dni: '12345678', email: 'juan@test.com', birthdate: '1990-01-01', category: 'Pleno', status: 'Activo', created_at: '2026-01-01T00:00:00.000Z' };
+                }
+                if (id === '999e4567-e89b-12d3-a456-426614174999') {
+                    return { id: '999e4567-e89b-12d3-a456-426614174999', name: 'Socio Duplicado', dni: '99999999', email: 'dup@test.com', birthdate: '1990-01-01', category: 'Pleno', status: 'Activo', created_at: '2026-01-01T00:00:00.000Z' };
+                }
+                return null;
             }
             async findByDni() { return null; }
             async create(data: any) { return { id: 'new-id', ...data, status: 'Activo' }; }
@@ -29,8 +33,8 @@ vi.mock('../infrastructure/PostgresPaymentRepository.js', () => {
                     : null;
             }
             async findActiveByMemberMonthYear(memberId: string, month: number, year: number) {
-                return memberId === 'duplicate-member-id' && month === 5 && year === 2026
-                    ? { id: 'existing-payment-id', amount: 1500, month: 5, year: 2026, status: 'Pending', due_date: '2026-06-10', payment_date: null, cancelled_at: null, member_id: 'duplicate-member-id' }
+                return memberId === '999e4567-e89b-12d3-a456-426614174999' && month === 5 && year === 2026
+                    ? { id: 'existing-payment-id', amount: 1500, month: 5, year: 2026, status: 'Pending', due_date: '2026-06-10', payment_date: null, cancelled_at: null, member_id: '999e4567-e89b-12d3-a456-426614174999' }
                     : null;
             }
             async create(data: any) { return { id: 'new-payment-id', ...data, status: 'Pending', payment_date: null, cancelled_at: null }; }
@@ -95,6 +99,24 @@ describe('Payment API Integration Tests', () => {
             expect(body.data.status).toBe('Pending');
             expect(body.data.member_id).toBe('123e4567-e89b-12d3-a456-426614174000');
             expect(body.data.id).toBeDefined();
+        });
+
+        //test de integración 8 - pago duplicado mismo socio mes año
+        it('8 - debe retornar 409 si ya existe un pago activo para ese socio en ese período', async () => {
+            const response = await app.inject({
+                method: 'POST',
+                url: '/api/v1/payments',
+                payload: {
+                    amount: 1500,
+                    month: 5,
+                    year: 2026,
+                    member_id: '999e4567-e89b-12d3-a456-426614174999',
+                },
+            });
+
+            expect(response.statusCode).toBe(409);
+            const body = JSON.parse(response.payload);
+            expect(body.error).toContain('Ya existe un pago activo');
         });
     });
 });
