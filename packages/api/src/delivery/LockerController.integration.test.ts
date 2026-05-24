@@ -181,4 +181,38 @@ describe('Locker API Integration Tests', () => {
             expect(body.data.deleted_at).toBeNull();
         });
     });
+        describe('GET /api/v1/lockers luego de crear', () => {
+        it('debe incluir en el listado el casillero creado previamente', async () => {
+            const payload: CreateLockerRequest = {
+                number: 31,
+                location: 'Hall',
+            };
+
+            const createResponse = await app.inject({
+                method: 'POST',
+                url: '/api/v1/lockers',
+                payload,
+            });
+
+            expect(createResponse.statusCode).toBe(201);
+
+            const getResponse = await app.inject({
+                method: 'GET',
+                url: '/api/v1/lockers',
+            });
+
+            expect(getResponse.statusCode).toBe(200);
+
+            const body = JSON.parse(getResponse.payload);
+
+            expect(body.data).toBeInstanceOf(Array);
+            expect(body.data).toHaveLength(1);
+            expect(body.data[0].id).toBe('locker-31');
+            expect(body.data[0].number).toBe(31);
+            expect(body.data[0].location).toBe('Hall');
+            expect(body.data[0].status).toBe('Available');
+            expect(body.data[0].member_id).toBeNull();
+            expect(body.data[0].deleted_at).toBeNull();
+        });
+    });
 });
