@@ -47,6 +47,7 @@ describe('CreateLockerUseCase', () => {
 
         expect(result).toEqual(mockLocker);
     });
+
     it('debe crear el casillero con estado inicial Available', async () => {
         const mockRequest: CreateLockerRequest = {
             number: 11,
@@ -68,6 +69,7 @@ describe('CreateLockerUseCase', () => {
 
         expect(result.status).toBe('Available');
     });
+
     it('debe crear el casillero sin socio asignado y sin fecha de baja', async () => {
         const mockRequest: CreateLockerRequest = {
             number: 12,
@@ -89,5 +91,24 @@ describe('CreateLockerUseCase', () => {
 
         expect(result.member_id).toBeNull();
         expect(result.deleted_at).toBeNull();
+    });
+
+    it('no debe permitir crear un casillero con número repetido', async () => {
+        const mockRequest: CreateLockerRequest = {
+            number: 10,
+            location: 'Hall',
+        };
+
+        vi.mocked(mockLockerValidator.validateNumberIsUnique)
+            .mockRejectedValueOnce(new Error('El número de casillero ya está en uso'));
+
+        await expect(useCase.execute(mockRequest))
+            .rejects
+            .toThrow('El número de casillero ya está en uso');
+
+        expect(mockLockerValidator.validateNumber).toHaveBeenCalledWith(10);
+        expect(mockLockerValidator.validateLocation).toHaveBeenCalledWith('Hall');
+        expect(mockLockerValidator.validateNumberIsUnique).toHaveBeenCalledWith(10);
+        expect(mockLockerRepo.create).not.toHaveBeenCalled();
     });
 });
