@@ -135,4 +135,20 @@ describe('CreatePaymentUseCase', () => {
             }),
         ).rejects.toThrow('El mes debe estar entre 1 y 12');
     });
+
+    //test unitario 5 - socio no existe
+    it('5 - debe lanzar un error si el socio no existe', async () => {
+        vi.mocked(mockMemberRepo.findById).mockResolvedValueOnce(null);
+    
+        await expect(
+            useCase.execute({
+                amount: 1500,
+                month: 5,
+                year: 2026,
+                member_id: '123e4567-e89b-12d3-a456-426614174000',
+            }),
+        ).rejects.toThrow('MEMBER_NOT_FOUND');
+    });
+
+
 });
