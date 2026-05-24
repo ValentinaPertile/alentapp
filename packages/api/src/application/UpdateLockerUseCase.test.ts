@@ -89,5 +89,57 @@ describe('UpdateLockerUseCase', () => {
         expect(result.status).toBe('Maintenance');
     });
 
+    it('debe permitir asignar un casillero a un socio', async () => {
+        const updateData: UpdateLockerRequest = {
+            number: 10,
+            location: 'Hall',
+            status: 'Assigned',
+            member_id: 'member-1',
+        };
 
+        const updatedLocker: LockerDTO = {
+            ...existingLocker,
+            status: 'Assigned',
+            member_id: 'member-1',
+        };
+
+        vi.mocked(mockLockerRepo.update).mockResolvedValueOnce(updatedLocker);
+
+        const result = await useCase.execute('locker-1', updateData);
+
+        expect(mockLockerRepo.findById).toHaveBeenCalledWith('locker-1');
+        expect(mockLockerValidator.validateNumber).toHaveBeenCalledWith(10);
+        expect(mockLockerValidator.validateLocation).toHaveBeenCalledWith('Hall');
+        expect(mockLockerValidator.validateStatus).toHaveBeenCalledWith('Assigned');
+        expect(mockLockerValidator.validateNumberIsUnique).toHaveBeenCalledWith(10, 'locker-1');
+        expect(mockLockerValidator.validateStatusAndMember).toHaveBeenCalledWith('Assigned', 'member-1');
+
+        expect(mockLockerRepo.update).toHaveBeenCalledWith('locker-1', updateData);
+        expect(result.status).toBe('Assigned');
+        expect(result.member_id).toBe('member-1');
+    });
+    it('no debe permitir dejar un casillero como Assigned sin socio asignado', async () => {
+        const updateData: UpdateLockerRequest = {
+            number: 10,
+            location: 'Hall',
+            status: 'Assigned',
+            member_id: null,
+        };
+
+        vi.mocked(mockLockerValidator.validateStatusAndMember)
+            .mockRejectedValueOnce(new Error('Debe indicarse un socio para asignar el casillero'));
+
+        await expect(useCase.execute('locker-1', updateData))
+            .rejects
+            .toThrow('Debe indicarse un socio para asignar el casillero');
+
+        expect(mockLockerRepo.findById).toHaveBeenCalledWith('locker-1');
+        expect(mockLockerValidator.validateNumber).toHaveBeenCalledWith(10);
+        expect(mockLockerValidator.validateLocation).toHaveBeenCalledWith('Hall');
+        expect(mockLockerValidator.validateStatus).toHaveBeenCalledWith('Assigned');
+        expect(mockLockerValidator.validateNumberIsUnique).toHaveBeenCalledWith(10, 'locker-1');
+        expect(mockLockerValidator.validateStatusAndMember).toHaveBeenCalledWith('Assigned', null);
+
+        expect(mockLockerRepo.update).not.toHaveBeenCalled();
+    });
 });
