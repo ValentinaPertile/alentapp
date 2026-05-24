@@ -47,4 +47,25 @@ describe('CreateLockerUseCase', () => {
 
         expect(result).toEqual(mockLocker);
     });
+    it('debe crear el casillero con estado inicial Available', async () => {
+        const mockRequest: CreateLockerRequest = {
+            number: 11,
+            location: 'Hall',
+        };
+
+        const mockLocker: LockerDTO = {
+            id: 'locker-2',
+            number: 11,
+            location: 'Hall',
+            status: 'Available',
+            member_id: null,
+            deleted_at: null,
+        };
+
+        vi.mocked(mockLockerRepo.create).mockResolvedValueOnce(mockLocker);
+
+        const result = await useCase.execute(mockRequest);
+
+        expect(result.status).toBe('Available');
+    });
 });
