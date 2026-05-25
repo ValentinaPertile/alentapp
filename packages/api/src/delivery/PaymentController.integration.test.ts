@@ -150,5 +150,17 @@ describe('Payment API Integration Tests', () => {
             expect(body.data.cancelled_at).not.toBeNull();
         });
 
+        //test de integración 20 - id inexistente retorna 404
+        it('20 - debe retornar 404 si el id del pago no existe', async () => {
+            const response = await app.inject({
+                method: 'PATCH',
+                url: '/api/v1/payments/00000000-0000-0000-0000-000000000000',
+                payload: { status: 'Paid' },
+            });
+
+            expect(response.statusCode).toBe(404);
+            const body = JSON.parse(response.payload);
+            expect(body.error).toContain('no existe');
+        });
     });
 });
