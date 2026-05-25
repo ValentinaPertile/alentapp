@@ -58,4 +58,12 @@ describe('Payment', () => {
 
         expect(() => payment.transitionTo('Pending')).toThrow('Transición de estado inválida');
     });
+
+    //test unitario 14 - transitionTo desde Canceled es estado terminal
+    it('14 - transitionTo desde Canceled debe lanzar error porque es estado terminal', () => {
+        const payment = new Payment({ ...basePaymentData, status: 'Canceled', cancelled_at: '2026-05-01T00:00:00.000Z' });
+
+        expect(() => payment.transitionTo('Pending')).toThrow('Transición de estado inválida');
+        expect(() => payment.transitionTo('Paid')).toThrow('Transición de estado inválida');
+    });
 });
