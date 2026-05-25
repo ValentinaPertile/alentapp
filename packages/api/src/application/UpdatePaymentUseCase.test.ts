@@ -59,4 +59,13 @@ describe('UpdatePaymentUseCase', () => {
         );
     });
 
+    //test unitario 17 - UpdatePaymentUseCase id inexistente lanza error
+    it('17 - debe lanzar un error si el id del pago no existe', async () => {
+        vi.mocked(mockPaymentRepo.findById).mockResolvedValueOnce(null);
+
+        await expect(
+            useCase.execute('id-inexistente-0000-0000-000000000000', 'Paid'),
+        ).rejects.toThrow('El pago no existe');
+    });
+
 });
