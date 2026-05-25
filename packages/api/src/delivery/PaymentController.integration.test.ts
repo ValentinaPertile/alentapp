@@ -135,5 +135,20 @@ describe('Payment API Integration Tests', () => {
             expect(body.data.status).toBe('Paid');
             expect(body.data.payment_date).not.toBeNull();
         });
+
+        //test de integración 19 - Pending a Canceled persiste cancelled_at
+        it('19 - debe retornar 200 y el pago con cancelled_at seteado al pasar de Pending a Canceled', async () => {
+            const response = await app.inject({
+                method: 'PATCH',
+                url: '/api/v1/payments/existing-payment-id',
+                payload: { status: 'Canceled' },
+            });
+
+            expect(response.statusCode).toBe(200);
+            const body = JSON.parse(response.payload);
+            expect(body.data.status).toBe('Canceled');
+            expect(body.data.cancelled_at).not.toBeNull();
+        });
+
     });
 });
