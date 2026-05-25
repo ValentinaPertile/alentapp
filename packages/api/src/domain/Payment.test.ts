@@ -66,4 +66,12 @@ describe('Payment', () => {
         expect(() => payment.transitionTo('Pending')).toThrow('Transición de estado inválida');
         expect(() => payment.transitionTo('Paid')).toThrow('Transición de estado inválida');
     });
+
+    //test unitario 15 - transitionTo mismo estado es idempotente
+    it('15 - transitionTo al mismo estado debe ser idempotente y no lanzar error', () => {
+        const payment = new Payment({ ...basePaymentData, status: 'Pending' });
+
+        expect(() => payment.transitionTo('Pending')).not.toThrow();
+        expect(payment.status).toBe('Pending');
+    });
 });
