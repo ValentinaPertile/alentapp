@@ -119,4 +119,21 @@ describe('Payment API Integration Tests', () => {
             expect(body.error).toContain('Ya existe un pago activo');
         });
     });
+
+    describe('PATCH /api/v1/payments/:id', () => {
+
+        //test de integración 18 - Pending a Paid persiste payment_date
+        it('18 - debe retornar 200 y el pago con payment_date seteado al pasar de Pending a Paid', async () => {
+            const response = await app.inject({
+                method: 'PATCH',
+                url: '/api/v1/payments/existing-payment-id',
+                payload: { status: 'Paid' },
+            });
+
+            expect(response.statusCode).toBe(200);
+            const body = JSON.parse(response.payload);
+            expect(body.data.status).toBe('Paid');
+            expect(body.data.payment_date).not.toBeNull();
+        });
+    });
 });
