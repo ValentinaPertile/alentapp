@@ -52,5 +52,10 @@ describe('Payment', () => {
         expect(payment.cancelled_at).not.toBeNull();
     });
 
-    
+    //test unitario 13 - transitionTo Pending desde Paid es inválida
+    it('13 - transitionTo Pending desde Paid debe lanzar error de transición inválida', () => {
+        const payment = new Payment({ ...basePaymentData, status: 'Paid', payment_date: '2026-05-01T00:00:00.000Z' });
+
+        expect(() => payment.transitionTo('Pending')).toThrow('Transición de estado inválida');
+    });
 });
