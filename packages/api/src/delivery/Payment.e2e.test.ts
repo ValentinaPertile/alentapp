@@ -24,7 +24,6 @@ describe('Payment API End-to-End Tests', () => {
         });
         await prisma.$connect();
 
-        // Creamos un socio real para asociar los pagos
         const member = await prisma.member.create({
             data: {
                 dni: testDni,
@@ -34,22 +33,26 @@ describe('Payment API End-to-End Tests', () => {
                 status: 'Activo',
             },
         });
+
         createdMemberId = member.id;
     });
 
     afterAll(async () => {
-        // Limpiamos pagos y socio creados durante los tests
-        if (createdPaymentId) {
-            await prisma.payment.deleteMany({ where: { id: createdPaymentId } });
-        }
         if (createdMemberId) {
-            await prisma.member.deleteMany({ where: { id: createdMemberId } });
+            await prisma.payment.deleteMany({
+                where: { member_id: createdMemberId },
+            });
+
+            await prisma.member.deleteMany({
+                where: { id: createdMemberId },
+            });
         }
+
         await prisma.$disconnect();
         await app.close();
     });
 
-    //test e2e 9 - POST /api/v1/payments retorna 201
+    //test 9 - e2e POST: crea un pago en DB real y retorna 201 con estado Pending
     it('9. POST: Debe crear un pago en la base de datos real y retornar 201', async () => {
         const response = await app.inject({
             method: 'POST',
@@ -63,6 +66,7 @@ describe('Payment API End-to-End Tests', () => {
         });
 
         expect(response.statusCode).toBe(201);
+
         const body = JSON.parse(response.payload);
 
         expect(body.data.id).toBeDefined();
@@ -72,27 +76,47 @@ describe('Payment API End-to-End Tests', () => {
 
         createdPaymentId = body.data.id;
 
-        // Verificación directa en PostgreSQL
-        const dbPayment = await prisma.payment.findUnique({ where: { id: createdPaymentId } });
+        const dbPayment = await prisma.payment.findUnique({
+            where: { id: createdPaymentId },
+        });
+
         expect(dbPayment).not.toBeNull();
         expect(dbPayment?.status).toBe('Pending');
     });
 
-    //test e2e 21 - DELETE /api/v1/payments/:id retorna 200 Canceled
+    // test 21 - e2e DELETE: cancela el pago y lo marca como Canceled
     it('21. DELETE: Debe cancelar el pago lógicamente y retornar 200 con status Canceled', async () => {
+        const createResponse = await app.inject({
+            method: 'POST',
+            url: '/api/v1/payments',
+            payload: {
+                amount: 2000,
+                month: 6,
+                year: 2026,
+                due_date: '2026-06-30',
+                member_id: createdMemberId,
+            },
+        });
+
+        const paymentId = JSON.parse(createResponse.payload).data.id;
+
         const response = await app.inject({
             method: 'DELETE',
-            url: `/api/v1/payments/${createdPaymentId}`,
+            url: `/api/v1/payments/${paymentId}`,
         });
 
         expect(response.statusCode).toBe(200);
+
         const body = JSON.parse(response.payload);
+
         expect(body.data.status).toBe('Canceled');
         expect(body.data.cancelled_at).not.toBeNull();
 
-        // Verificación directa en PostgreSQL
-        const dbPayment = await prisma.payment.findUnique({ where: { id: createdPaymentId } });
+        const dbPayment = await prisma.payment.findUnique({
+            where: { id: paymentId },
+        });
+
         expect(dbPayment?.status).toBe('Canceled');
         expect(dbPayment?.cancelled_at).not.toBeNull();
-    })    
+    });
 });
