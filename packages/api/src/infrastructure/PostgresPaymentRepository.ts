@@ -26,7 +26,7 @@ export class PostgresPaymentRepository implements PaymentRepository {
         this.prisma = new PrismaClient({ adapter });
     }
 
-    async create(data: CreatePaymentRequest): Promise<PaymentDTO> {
+    async create(data: any): Promise<PaymentDTO> {
         const payment = await this.prisma.payment.create({
             data: {
                 amount:       data.amount,
