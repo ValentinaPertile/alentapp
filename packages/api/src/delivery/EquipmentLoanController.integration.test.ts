@@ -177,4 +177,47 @@ describe('EquipmentLoan API Integration Tests', () => {
             expect(body.error).toContain('no existe');
         });
     });
+    describe('GET /api/v1/equipment-loans', () => {
+
+        // test de integración 7 - listar préstamos retorna 200
+        it('7 - debe retornar 200 y una lista de préstamos', async () => {
+            const response = await app.inject({
+                method: 'GET',
+                url: '/api/v1/equipment-loans',
+            });
+
+            expect(response.statusCode).toBe(200);
+            const body = JSON.parse(response.payload);
+            expect(Array.isArray(body.data)).toBe(true);
+        });
+    });
+
+    describe('DELETE /api/v1/equipment-loans/:id', () => {
+
+        // test de integración 8 - borrado lógico via DELETE
+        it('8 - debe retornar 200 y cancelar el préstamo via DELETE', async () => {
+            const response = await app.inject({
+                method: 'DELETE',
+                url: '/api/v1/equipment-loans/existing-loan-id',
+            });
+
+            expect(response.statusCode).toBe(200);
+            const body = JSON.parse(response.payload);
+            expect(body.data.status).toBe('Canceled');
+            expect(body.data.canceled_at).not.toBeNull();
+        });
+
+        // test de integración 9 - DELETE con id inexistente retorna 404
+        it('9 - debe retornar 404 si el id del préstamo no existe en DELETE', async () => {
+            const response = await app.inject({
+                method: 'DELETE',
+                url: '/api/v1/equipment-loans/00000000-0000-0000-0000-000000000000',
+            });
+
+            expect(response.statusCode).toBe(404);
+            const body = JSON.parse(response.payload);
+            expect(body.error).toContain('no existe');
+        });
+    });
+
 });
