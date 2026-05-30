@@ -102,7 +102,7 @@ model EquipmentLoan {
     due_date     DateTime
     canceled_at  DateTime?
     member_id    String
-    member       Member              @relation(fields: [member_id], references: [id])
+    member       Member              @relation(fields: [member_id], references: [id], onDelete: Cascade)
 
     @@map("equipment_loans")
 }
