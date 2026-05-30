@@ -104,4 +104,15 @@ describe('EquipmentLoan', () => {
         expect(loan.loan_date).toBe(baseEquipmentLoanData.loan_date);
         expect(loan.due_date).toBe(baseEquipmentLoanData.due_date);
     });
+    // test unitario 13 - transitionTo Damaged desde Returned es inválida
+    it('13 - transitionTo Damaged desde Returned debe lanzar error de transición inválida', () => {
+        const loan = new EquipmentLoan({ ...baseEquipmentLoanData, status: 'Returned' });
+        expect(() => loan.transitionTo('Damaged')).toThrow('Transición de estado inválida');
+    });
+
+    // test unitario 14 - transitionTo Returned desde Damaged es inválida
+    it('14 - transitionTo Returned desde Damaged debe lanzar error de transición inválida', () => {
+        const loan = new EquipmentLoan({ ...baseEquipmentLoanData, status: 'Damaged' });
+        expect(() => loan.transitionTo('Returned')).toThrow('Transición de estado inválida');
+    });
 });
