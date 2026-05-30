@@ -149,4 +149,65 @@ describe('EquipmentLoan API End-to-End Tests', () => {
         });
         expect(dbLoan).toBeNull();
     });
+    // test e2e 4 - socio Cadete no puede pedir préstamo en BD real
+    it('4. POST: Socio Cadete debe retornar 403 en BD real', async () => {
+        const cadeteMember = await prisma.member.create({
+            data: {
+                dni: `CAD${randomSuffix}`,
+                name: 'Socio Cadete E2E',
+                email: `cadete${randomSuffix}@test.com`,
+                category: 'Cadete',
+                status: 'Activo',
+            },
+        });
+
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/v1/equipment-loans',
+            payload: {
+                item_name: 'Pelota',
+                loan_date: '2026-05-30T00:00:00.000Z',
+                due_date: '2026-06-06T00:00:00.000Z',
+                member_id: cadeteMember.id,
+            },
+        });
+
+        expect(response.statusCode).toBe(403);
+        const body = JSON.parse(response.payload);
+        expect(body.error).toContain('Cadet');
+
+        // Limpiar
+        await prisma.member.delete({ where: { id: cadeteMember.id } });
+    });
+
+    // test e2e 5 - PATCH actualiza correctamente en BD real
+    it('5. PATCH: Debe actualizar el status a Returned en la BD real', async () => {
+        const createResponse = await app.inject({
+            method: 'POST',
+            url: '/api/v1/equipment-loans',
+            payload: {
+                item_name: 'Casco E2E',
+                loan_date: '2026-05-30T00:00:00.000Z',
+                due_date: '2026-06-06T00:00:00.000Z',
+                member_id: createdMemberId,
+            },
+        });
+        const loanId = JSON.parse(createResponse.payload).data.id;
+
+        const response = await app.inject({
+            method: 'PATCH',
+            url: `/api/v1/equipment-loans/${loanId}`,
+            payload: { status: 'Returned' },
+        });
+
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.data.status).toBe('Returned');
+
+        // Verificar en la BD real
+        const dbLoan = await prisma.equipmentLoan.findUnique({
+            where: { id: loanId },
+        });
+        expect(dbLoan?.status).toBe('Returned');
+    });
 });
