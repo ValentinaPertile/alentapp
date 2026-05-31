@@ -76,7 +76,19 @@ export function buildApp() {
         getPaymentsUseCase,
     );
 
-    server.get('/api/v1/payments', paymentController.getAll.bind(paymentController));
+    // EquipmentLoan
+    const equipmentLoanRepo = new PostgresEquipmentLoanRepository();
+
+    const createEquipmentLoanUseCase = new CreateEquipmentLoanUseCase(equipmentLoanRepo, memberRepo);
+    const updateEquipmentLoanUseCase = new UpdateEquipmentLoanUseCase(equipmentLoanRepo);
+    const getEquipmentLoansUseCase = new GetEquipmentLoansUseCase(equipmentLoanRepo);
+
+    const equipmentLoanController = new EquipmentLoanController(
+        createEquipmentLoanUseCase,
+        updateEquipmentLoanUseCase,
+        getEquipmentLoansUseCase,
+    );
+
     // Locker
     const lockerRepo = new PostgresLockerRepository();
     const lockerValidator = new LockerValidator(lockerRepo, memberRepo);
@@ -85,7 +97,6 @@ export function buildApp() {
     const updateLockerUseCase = new UpdateLockerUseCase(lockerRepo, lockerValidator);
     const deleteLockerUseCase = new DeleteLockerUseCase(lockerRepo);
     const getLockersUseCase = new GetLockersUseCase(lockerRepo);
-
 
     const lockerController = new LockerController(
         createLockerUseCase,
@@ -101,21 +112,14 @@ export function buildApp() {
     server.delete('/api/v1/socios/:id', memberController.delete.bind(memberController));
 
     // Payment routes
+    server.get('/api/v1/payments', paymentController.getAll.bind(paymentController));
     server.post('/api/v1/payments', paymentController.create.bind(paymentController));
     server.patch('/api/v1/payments/:id', paymentController.update.bind(paymentController));
     server.delete('/api/v1/payments/:id', paymentController.delete.bind(paymentController));
-    //EquipmentLoan
-    const equipmentLoanRepo = new PostgresEquipmentLoanRepository();
 
-    const createEquipmentLoanUseCase = new CreateEquipmentLoanUseCase(equipmentLoanRepo, memberRepo);
-    const updateEquipmentLoanUseCase = new UpdateEquipmentLoanUseCase(equipmentLoanRepo);
-    const getEquipmentLoansUseCase = new GetEquipmentLoansUseCase(equipmentLoanRepo);
-    const equipmentLoanController = new EquipmentLoanController(
-        createEquipmentLoanUseCase,
-        updateEquipmentLoanUseCase,
-        getEquipmentLoansUseCase,
-    ); 
-    
+
+    // EquipmentLoan routes
+    server.get('/api/v1/equipment-loans', equipmentLoanController.getAll.bind(equipmentLoanController));
     server.post('/api/v1/equipment-loans', equipmentLoanController.create.bind(equipmentLoanController));
     server.patch('/api/v1/equipment-loans/:id', equipmentLoanController.update.bind(equipmentLoanController));
     server.delete('/api/v1/equipment-loans/:id', equipmentLoanController.delete.bind(equipmentLoanController));
