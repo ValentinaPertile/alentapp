@@ -66,7 +66,7 @@ model Locker {
     location   LockerLocation
     status     LockerStatus   @default(Available)
     member_id  String?
-    member     Member?        @relation(fields: [member_id], references: [id])
+    member     Member?        @relation(fields: [member_id], references: [id], onDelete: SetNull)
     deleted_at DateTime?      @db.Date
 
     @@map("lockers")
@@ -82,7 +82,7 @@ model Payment {
     payment_date DateTime?
     cancelled_at DateTime?
     member_id    String
-    member       Member        @relation(fields: [member_id], references: [id])
+    member       Member        @relation(fields: [member_id], references: [id], onDelete: Cascade)
 
     @@map("payments")
 }
