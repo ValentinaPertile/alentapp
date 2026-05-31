@@ -119,4 +119,42 @@ describe('Payment API End-to-End Tests', () => {
         expect(dbPayment?.status).toBe('Canceled');
         expect(dbPayment?.cancelled_at).not.toBeNull();
     });
+
+    // test 22 - e2e PATCH: actualiza el estado de un pago y persiste el cambio
+    it('22. PATCH: Debe actualizar el estado de un pago y retornar 200', async () => {
+        const createResponse = await app.inject({
+            method: 'POST',
+            url: '/api/v1/payments',
+            payload: {
+                amount: 1800,
+                month: 7,
+                year: 2026,
+                member_id: createdMemberId,
+            },
+        });
+
+        const paymentId = JSON.parse(createResponse.payload).data.id;
+
+        const response = await app.inject({
+            method: 'PATCH',
+            url: `/api/v1/payments/${paymentId}`,
+            payload: {
+                status: 'Paid',
+            },
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const body = JSON.parse(response.payload);
+
+        expect(body.data.id).toBe(paymentId);
+        expect(body.data.status).toBe('Paid');
+
+        const dbPayment = await prisma.payment.findUnique({
+            where: { id: paymentId },
+        });
+
+        expect(dbPayment).not.toBeNull();
+        expect(dbPayment?.status).toBe('Paid');
+    });
 });
