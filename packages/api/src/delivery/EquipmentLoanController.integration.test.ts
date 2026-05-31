@@ -49,16 +49,23 @@ vi.mock('../infrastructure/PostgresLockerRepository.js', () => {
 });
 
 vi.mock('../infrastructure/PostgresEquipmentLoanRepository.js', () => {
+    let currentStatus = 'Loaned';
+    let currentCanceledAt: string | null = null;
+
     return {
         PostgresEquipmentLoanRepository: class {
             async findAll() { return []; }
             async findById(id: string) {
                 return id === 'existing-loan-id'
-                    ? { id: 'existing-loan-id', item_name: 'Pelota', status: 'Loaned', loan_date: '2026-05-01T00:00:00.000Z', due_date: '2026-05-15T00:00:00.000Z', canceled_at: null, member_id: '123e4567-e89b-12d3-a456-426614174000' }
+                    ? { id: 'existing-loan-id', item_name: 'Pelota', status: currentStatus, loan_date: '2026-05-01T00:00:00.000Z', due_date: '2026-05-15T00:00:00.000Z', canceled_at: currentCanceledAt, member_id: '123e4567-e89b-12d3-a456-426614174000' }
                     : null;
             }
             async create(data: any) { return { id: 'new-loan-id', ...data, status: 'Loaned', canceled_at: null }; }
-            async update(id: string, data: any) { return { id, item_name: 'Pelota', loan_date: '2026-05-01T00:00:00.000Z', due_date: '2026-05-15T00:00:00.000Z', member_id: '123e4567-e89b-12d3-a456-426614174000', ...data }; }
+            async update(id: string, data: any) {
+                if (data.status) currentStatus = data.status;
+                if (data.canceled_at !== undefined) currentCanceledAt = data.canceled_at;
+                return { id, item_name: 'Pelota', loan_date: '2026-05-01T00:00:00.000Z', due_date: '2026-05-15T00:00:00.000Z', member_id: '123e4567-e89b-12d3-a456-426614174000', status: currentStatus, canceled_at: currentCanceledAt };
+            }
         }
     };
 });
