@@ -23,3 +23,17 @@ OpenTelemetry es un framework de código abierto que provee APIs, SDKs y herrami
 Prometheus, en cambio, es un sistema de monitoreo y base de datos de series temporales. Se especializa en almacenar métricas numéricas y exponerlas para consulta mediante su lenguaje PromQL. Utiliza un modelo de recolección basado en pull (consulta activa a los endpoints /metrics de los servicios).
 
 La diferencia principal es de responsabilidades: OpenTelemetry actúa como el agente de instrumentación dentro de nuestra aplicación, estandarizando cómo se capturan los datos; mientras que Prometheus actúa como el motor de almacenamiento centralizado que los consume y los persiste para poder analizarlos.
+
+---
+ 
+### ¿Cuáles son los "3 pilares" de la observabilidad? ¿Cuál aborda OpenTelemetry?
+ 
+Los tres pilares fundamentales de la observabilidad son:
+ 
+1. **Métricas:** Datos numéricos y agregados que se miden a lo largo del tiempo (como la tasa de solicitudes, uso de CPU o cantidad de errores). Permiten entender el estado de salud general del sistema.
+2. **Trazas (Traces):** Registro del recorrido completo de una petición a través de los distintos componentes del sistema. Son esenciales para identificar latencias y cuellos de botella en flujos distribuidos donde intervienen múltiples servicios.
+3. **Logs:** Registros de texto con marca de tiempo sobre eventos puntuales y detallados que ocurren en la aplicación. Son la herramienta principal para el debugging y el análisis de causas raíz ante fallas específicas.
+
+OpenTelemetry está diseñado para abordar los tres, estableciendo una solución estándar sin necesidad de instalar librerías distintas para cada tipo de dato.
+ 
+---
