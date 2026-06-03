@@ -45,3 +45,16 @@ El Método RED es una metodología de monitoreo diseñada específicamente para 
 3. **Duration (Duración / Latencia):** Mide la cantidad de tiempo que toma procesar y resolver las solicitudes HTTP, comúnmente analizada a través de percentiles (como p95 o p99) en lugar de promedios simples. Sirve para evaluar la performance percibida por el usuario e identificar qué endpoints específicos actúan como cuellos de botella lentos dentro del backend.
 
 ---
+### ¿Qué es el OTLP (OpenTelemetry Protocol)? ¿Qué ventaja tiene frente a exportar directamente a Prometheus?
+
+OTLP es el protocolo de red nativo de OpenTelemetry diseñado para la transmisión de datos de telemetría (métricas, logs y trazas) de forma eficiente bajo los estándares gRPC y HTTP/Protobuf. 
+
+La ventaja principal de utilizar OTLP en lugar de exportar directamente en un formato específico de Prometheus es el desacoplamiento técnico que ofrece. Si la API exporta los datos usando OTLP hacia un recolector centralizado (Collector), la aplicación se vuelve agnóstica de las herramientas finales de monitoreo. Esto permite que el día de mañana podamos cambiar Prometheus por Datadog, Dynatrace o New Relic simplemente modificando la configuración del colector, sin necesidad de alterar una sola línea de código fuente ni reinstalar librerías dentro del backend de nuestra aplicación.
+
+### ¿Cómo se relaciona OpenTelemetry con Grafana?
+
+La relación es de complementariedad dentro de la arquitectura de observabilidad del sistema: OpenTelemetry cumple el rol de motor de recolección de datos e instrumentación dentro de la API, mientras que Grafana actúa exclusivamente como la capa de visualización e interfaz de usuario. 
+
+OpenTelemetry captura las métricas RED y las expone para que sean almacenadas por un motor de base de datos de series temporales (como Prometheus). Luego, Grafana se conecta a Prometheus como origen de datos (Data Source) para consultar esa información mediante PromQL y plasmarla en dashboards gráficos e interactivos en tiempo real.
+
+---
