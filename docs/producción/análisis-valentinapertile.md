@@ -47,3 +47,21 @@ El Método RED es una metodología de monitoreo diseñada para servicios orienta
 3. **Duration (Duración / Latencia):** Mide cuánto tiempo tarda el servidor en procesar y responder cada solicitud. Se analiza mediante percentiles en lugar de promedios, para capturar la experiencia del peor caso. Sirve para evaluar la performance percibida por el usuario final e identificar qué endpoints actúan como cuellos de botella dentro del backend.
 
 ---
+
+### ¿Qué es el OTLP (OpenTelemetry Protocol)? ¿Qué ventaja tiene frente a exportar directamente a Prometheus?
+ 
+**OTLP** es el protocolo de red de OpenTelemetry para la transmisión de datos de telemetría (métricas, trazas y logs) de forma eficiente. Está basado en gRPC y HTTP/Protobuf y es el estándar recomendado para comunicar aplicaciones instrumentadas con un colector centralizado.
+ 
+La ventaja principal de usar OTLP en lugar de exportar directamente en formato Prometheus es el desacoplamiento entre la aplicación y las herramientas de observabilidad. Si la API envía sus datos mediante OTLP a un colector intermedio, la aplicación se vuelve agnóstica del destino final. Esto permite que, si en el futuro se decide reemplazar Prometheus por otro backend, el cambio se realiza únicamente en la configuración del colector, sin tocar ni una línea del código ni reinstalar dependencias.
+ 
+---
+ 
+### ¿Cómo se relaciona OpenTelemetry con Grafana?
+ 
+La relación es de complementariedad dentro de la arquitectura de observabilidad: cada herramienta cumple un rol diferente y se necesitan mutuamente para tener un sistema de monitoreo.
+ 
+OpenTelemetry actúa como el motor de recolección dentro de la API: captura las métricas RED y las expone para que sean almacenadas por Prometheus. Luego, Grafana se conecta a Prometheus como fuente de datos y consulta esa información mediante PromQL para plasmarla en dashboards. Grafana es únicamente la capa de visualización, es decir, no recolecta ni almacena datos por sí misma.
+ 
+Mini esquema que me sirve para visualizar el flujo: OpenTelemetry instrumenta -> Prometheus almacena -> Grafana visualiza
+ 
+---
