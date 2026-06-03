@@ -15,4 +15,11 @@ A continuación se detallan los 5 problemas críticos identificados en los archi
 | **Frontend servido con servidor de desarrollo de Vite:** El contenedor del frontend ejecuta `npm run dev` con flag `--host 0.0.0.0`, exponiendo el servidor de desarrollo de Vite en producción sin optimizaciones, sin compresión ni cabeceras de seguridad HTTP. | `packages/web/Dockerfile` línea 11: `CMD ["npm", "run", "dev", "-w", "packages/web", "--", "--host", "0.0.0.0"]` y `docker-compose.yml` línea 47: `command: npm run dev -w packages/web -- --host 0.0.0.0` | **Alto** | Usar un *multi-stage build*: ejecutar `vite build` en una etapa de construcción y luego usar **Nginx** (`nginx:stable-alpine`) en la etapa final para servir los archivos estáticos con compresión gzip, caché de assets y *security headers*. |
  
 ---
- 
+
+ 1.2. Investigación de OpenTelemetry
+¿Qué es OpenTelemetry y cómo se diferencia de Prometheus?
+OpenTelemetry es un framework de código abierto que provee APIs, SDKs y herramientas para generar, recolectar y exportar datos de telemetría (métricas, trazas y logs) desde las aplicaciones de forma independiente al proveedor de monitoreo elegido. Me parece importante aclarar que OpenTelemetry no almacena ni visualiza los datos: su rol es instrumentar el código fuente y transmitir la información.
+
+Prometheus, en cambio, es un sistema de monitoreo y base de datos de series temporales. Se especializa en almacenar métricas numéricas y exponerlas para consulta mediante su lenguaje PromQL. Utiliza un modelo de recolección basado en pull (consulta activa a los endpoints /metrics de los servicios).
+
+La diferencia principal es de responsabilidades: OpenTelemetry actúa como el agente de instrumentación dentro de nuestra aplicación, estandarizando cómo se capturan los datos; mientras que Prometheus actúa como el motor de almacenamiento centralizado que los consume y los persiste para poder analizarlos.
