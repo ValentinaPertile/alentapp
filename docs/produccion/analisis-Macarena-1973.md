@@ -36,3 +36,12 @@ Los tres pilares fundamentales de la observabilidad en sistemas distribuidos son
 OpenTelemetry es un proyecto diseñado para abordar **los tres pilares en su totalidad**, ofreciendo una solución unificada para métricas, trazas y logs bajo un mismo estándar, evitando tener que instalar agentes o librerías diferentes para cada tipo de dato.
 
 ---
+### Expliquen el concepto de métricas RED (Rate, Errors, Duration). ¿Para qué sirve cada una?
+
+El Método RED es una metodología de monitoreo diseñada específicamente para servicios basados en solicitudes (como nuestra API de Fastify), enfocada en medir el rendimiento desde la perspectiva del usuario o cliente del sistema. Se compone de tres métricas fundamentales:
+
+1. **Rate (Tasa de peticiones):** Mide la cantidad de solicitudes HTTP que está recibiendo el servidor por segundo. Sirve para entender el volumen de tráfico actual del sistema, identificar picos de uso en el club y dimensionar la infraestructura necesaria frente a la demanda masiva de usuarios.
+2. **Errors (Tasa de errores):** Mide la cantidad de peticiones que fallan, habitualmente segmentadas por códigos de estado HTTP erróneos (como respuestas de la familia 4xx y 5xx). Su utilidad es clave para detectar anomalías inmediatas tras un despliegue, caídas de la base de datos o fallas críticas que impacten directamente en la experiencia del usuario.
+3. **Duration (Duración / Latencia):** Mide la cantidad de tiempo que toma procesar y resolver las solicitudes HTTP, comúnmente analizada a través de percentiles (como p95 o p99) en lugar de promedios simples. Sirve para evaluar la performance percibida por el usuario e identificar qué endpoints específicos actúan como cuellos de botella lentos dentro del backend.
+
+---
