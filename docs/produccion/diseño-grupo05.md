@@ -55,12 +55,42 @@ Este archivo funciona como el plano de orquestación de la arquitectura de servi
 
 | Aspecto Técnico | Requisito de Diseño y Justificación Académica |
 | :--- | :--- |
-| **Gestión de Secrets<br>(Solución Problema 1)** | Se prohíbe taxativamente harcodear credenciales en el archivo. Se elimina la exposición de cadenas críticas (como `DATABASE_URL=postgres://admin:password123...`) del repositorio público y se migran al uso dinámico de variables de entorno administradas mediante un archivo `.env` local e independiente. |
-| **Resource limits<br>(Solución Problema 2)** | Se introducen restricciones de hardware mandatorias para cada uno de los servicios mediante las directivas `deploy.resources.limits` (estableciendo topes de `cpus` y `memory`). Esto impide que un desbordamiento de memoria o un hilo bloqueado en la API agote los recursos del servidor físico de la institución. |
-| **Orquestación y Salud<br>(Solución Problema 3)** | Se integran bloques de `healthcheck` cruzados en el compose. El servicio de la API utiliza la cláusula `depends_on` con la condición `service_healthy` respecto a la base de datos, impidiendo que el backend intente arrancar y falle conexiones antes de que el motor SQL esté listo para operar. |
-| **Aislamiento de Redes<br>(Solución Problema 4)** | Se descarta el uso del `default bridge` de Docker. Se define explícitamente una red interna personalizada de tipo bridge (`alentapp-network`), aislando lógicamente los componentes y limitando qué servicios (como la base de datos) tienen denegado el acceso o la exposición directa hacia redes externas. |
-| **Políticas de Logging<br>(Solución Problema 5)** | Se configura de forma global el driver de logs nativo `json-file` acompañado de parámetros estrictos de rotación (`max-size: "10m"` y `max-file: "3"`). Esto asegura la auditoría de eventos de la aplicación sin el riesgo latente de colapsar el almacenamiento en disco por el crecimiento desmedido de los logs de salida. |
-| **Estrategia de Migraciones<br>(Solución Problema 12)** | Para la inicialización del motor de persistencia, se elimina por completo la instrucción `npx prisma migrate dev`, la cual está diseñada exclusivamente para entornos de desarrollo y acarrea el riesgo de resetear la base de datos de producción de forma irreversible. En su lugar, se automatiza el comando `npx prisma migrate deploy`, que aplica los esquemas pendientes de forma segura y no destructiva. |
-| **Inmutabilidad de Código<br>(Solución Problema 13)** | Se eliminan los mapeos de volúmenes de desarrollo que montaban el código fuente local directo al contenedor (`volumes: - .:/app`). En producción el contenedor debe ser autosuficiente e inmutable; los volúmenes quedan limitados únicamente a la persistencia estricta de los archivos de datos del motor de base de datos (`pgdata`). |
-| **Protección del Filesystem<br>(Solución Problema 14)** | Con el objeto de evitar la inyección o ejecución de scripts maliciosos en caliente en caso de que un contenedor sea vulnerado, se añade la bandera `read_only: true` sobre el sistema de archivos raíz, complementándose con el uso de volúmenes de tipo `tmpfs` acotados únicamente para aquellos directorios específicos que requieran escrituras temporales del sistema operativo. |
-| **Mínimo Privilegio del Kernel<br>(Solución Problema 15)** | Se implementa el principio de mínimo privilegio sobre el Kernel de Linux a través de la configuración del Compose. Se remueven los privilegios por defecto mediante `cap_drop: [ALL]` y se añaden estrictamente las capacidades indispensables para la operación de red del servicio web por medio de `cap_add: [NET_BIND_SERVICE]`. |
+| *Gestión de Secrets<br>(Solución Problema 1)* | Se prohíbe taxativamente harcodear credenciales en el archivo. Se elimina la exposición de cadenas críticas (como DATABASE_URL=postgres://admin:password123...) del repositorio público y se migran al uso dinámico de variables de entorno administradas mediante un archivo .env local e independiente. |
+| *Resource limits<br>(Solución Problema 2)* | Se introducen restricciones de hardware mandatorias para cada uno de los servicios mediante las directivas deploy.resources.limits (estableciendo topes de cpus y memory). Esto impide que un desbordamiento de memoria o un hilo bloqueado en la API agote los recursos del servidor físico de la institución. |
+| *Orquestación y Salud<br>(Solución Problema 3)* | Se integran bloques de healthcheck cruzados en el compose. El servicio de la API utiliza la cláusula depends_on con la condición service_healthy respecto a la base de datos, impidiendo que el backend intente arrancar y falle conexiones antes de que el motor SQL esté listo para operar. |
+| *Aislamiento de Redes<br>(Solución Problema 4)* | Se descarta el uso del default bridge de Docker. Se define explícitamente una red interna personalizada de tipo bridge (alentapp-network), aislando lógicamente los componentes y limitando qué servicios (como la base de datos) tienen denegado el acceso o la exposición directa hacia redes externas. |
+| *Políticas de Logging<br>(Solución Problema 5)* | Se configura de forma global el driver de logs nativo json-file acompañado de parámetros estrictos de rotación (max-size: "10m" y max-file: "3"). Esto asegura la auditoría de eventos de la aplicación sin el riesgo latente de colapsar el almacenamiento en disco por el crecimiento desmedido de los logs de salida. |
+| *Estrategia de Migraciones<br>(Solución Problema 12)* | Para la inicialización del motor de persistencia, se elimina por completo la instrucción npx prisma migrate dev, la cual está diseñada exclusivamente para entornos de desarrollo y acarrea el riesgo de resetear la base de datos de producción de forma irreversible. En su lugar, se automatiza el comando npx prisma migrate deploy, que aplica los esquemas pendientes de forma segura y no destructiva. |
+| *Inmutabilidad de Código<br>(Solución Problema 13)* | Se eliminan los mapeos de volúmenes de desarrollo que montaban el código fuente local directo al contenedor (volumes: - .:/app). En producción el contenedor debe ser autosuficiente e inmutable; los volúmenes quedan limitados únicamente a la persistencia estricta de los archivos de datos del motor de base de datos (pgdata). |
+| *Protección del Filesystem<br>(Solución Problema 14)* | Con el objeto de evitar la inyección o ejecución de scripts maliciosos en caliente en caso de que un contenedor sea vulnerado, se añade la bandera read_only: true sobre el sistema de archivos raíz, complementándose con el uso de volúmenes de tipo tmpfs acotados únicamente para aquellos directorios específicos que requieran escrituras temporales del sistema operativo. |
+| *Mínimo Privilegio del Kernel<br>(Solución Problema 15)* | Se implementa el principio de mínimo privilegio sobre el Kernel de Linux a través de la configuración del Compose. Se remueven los privilegios por defecto mediante cap_drop: [ALL] y se añaden estrictamente las capacidades indispensables para la operación de red del servicio web por medio de cap_add: [NET_BIND_SERVICE]. |
+
+---
+
+## 2.2. Diseño de la observabilidad
+ 
+### a) Métricas RED a capturar
+ 
+A continuación se definen las 3 métricas fundamentales del método RED que se capturarán desde la API de Alentapp, siguiendo la metodología de Tom Wilkie (2015):
+ 
+| Métrica | Tipo OpenTelemetry | Descripción | Labels |
+|---|---|---|---|
+| *Rate* | Counter | Cantidad total de requests HTTP recibidos por segundo (solicitudes exitosas y fallidas) | method (GET, POST, PATCH, DELETE), route (/api/v1/socios, /api/v1/payments, etc.), status (200, 201, 400, 404, 500, etc.) |
+| *Errors* | Counter | Cantidad de requests que resultan en error (códigos de estado 4xx y 5xx). Se expresa comúnmente como porcentaje: (errors / total requests) * 100 | method, route, status |
+| *Duration* | Histogram | Tiempo en milisegundos que toma procesar y responder cada request. Se analiza mediante percentiles (p50, p95, p99) para entender la distribución real de latencias | method, route |
+ 
+*Métricas adicionales de contexto del sistema:*
+ 
+| Métrica | Tipo OpenTelemetry | Descripción |
+|---|---|---|
+| process.memory.usage | Gauge | Consumo de memoria RAM del proceso Node.js en bytes. Útil para detectar memory leaks |
+| http.requests.active | Gauge | Número de requests HTTP concurrentes en procesamiento en tiempo real |
+ 
+*Ejemplo de uso en Alentapp:*
+ 
+- *Rate:* Saber si /api/v1/socios recibe 10 req/s o 1000 req/s → dimensiona la infraestructura
+- *Errors:* Detectar si después de un deploy hay 5% de 500 errors en /api/v1/payments → rollback inmediato
+- *Duration:* Identificar que /api/v1/socios tiene p99=2.5s mientras que /api/v1/sports tiene p99=50ms → optimizar queries
+
+---
+ 
