@@ -4,8 +4,6 @@
  
 ## 1.1. Análisis de la Infraestructura Docker Actual
  
-A continuación se detallan los 5 problemas críticos identificados en los archivos Docker actuales del proyecto respecto a las buenas prácticas de entornos productivos:
- 
 | Problema | ¿Dónde ocurre? | Impacto | Solución propuesta |
 | :--- | :--- | :---: | :--- |
 | **Variables de entorno hardcodeadas:** Las credenciales de la base de datos están escritas en texto plano dentro del archivo de configuración de servicios. | `docker-compose.yml` línea 21: `DATABASE_URL=postgres://admin:password123@db:5432/alentapp_db` | **Alto** | Crear un archivo `.env` con las variables sensibles y referenciarlas desde el Compose con sintaxis `${VARIABLE}`. Agregar `.env` al `.gitignore` para que nunca se suba al repositorio. |
