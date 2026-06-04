@@ -1,12 +1,11 @@
 global:
-  scrape_interval: 15s      # Cada 15 segundos va a buscar métricas
+  scrape_interval: 15s
   evaluation_interval: 15s
- 
+
 scrape_configs:
-  # Job para capturar las métricas de OpenTelemetry que exporta la API de Alentapp
   - job_name: 'opentelemetry'
     static_configs:
-      - targets: ['host.docker.internal:9464'] # Conexión al puerto de telemetría de la app
-    labels:
-      app: 'alentapp'
-      service: 'api'
+      - targets: ['api:9464']
+        labels:
+          app: 'alentapp'
+          service: 'api'
