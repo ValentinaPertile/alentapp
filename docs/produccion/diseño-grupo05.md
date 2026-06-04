@@ -45,3 +45,22 @@ El archivo se diseña usando una estrategia de migración tecnológica de 3 etap
 * **Healthcheck:** Configuración de un control interno periódico contra el puerto `80` para monitorizar la salud del demonio de Nginx.
 
 ---
+
+### c) docker-compose.prod.yml
+
+#### 1. Propósito
+Este archivo funciona como el plano de orquestación de la arquitectura de servicios en el entorno productivo. Su finalidad es coordinar el ciclo de vida, el orden de arranque y la conectividad de la API, el cliente Web y el motor de Base de Datos, endureciendo los límites de acceso al sistema operativo, gestionando las variables sensibles y asegurando la persistencia adecuada de los datos de Alentapp sin comprometer el host.
+
+#### 2. Estructura y Configuración de Servicios para Producción
+
+| Aspecto Técnico | Requisito de Diseño y Justificación Académica |
+| :--- | :--- |
+| **Gestión de Secrets<br>(Solución Problema 1)** | Se prohíbe taxativamente harcodear credenciales en el archivo. Se elimina la exposición de cadenas críticas (como `DATABASE_URL=postgres://admin:password123...`) del repositorio público y se migran al uso dinámico de variables de entorno administradas mediante un archivo `.env` local e independiente. |
+| **Resource limits<br>(Solución Problema 2)** | Se introducen restricciones de hardware mandatorias para cada uno de los servicios mediante las directivas `deploy.resources.limits` (estableciendo topes de `cpus` y `memory`). Esto impide que un desbordamiento de memoria o un hilo bloqueado en la API agote los recursos del servidor físico de la institución. |
+| **Orquestación y Salud<br>(Solución Problema 3)** | Se integran bloques de `healthcheck` cruzados en el compose. El servicio de la API utiliza la cláusula `depends_on` con la condición `service_healthy` respecto a la base de datos, impidiendo que el backend intente arrancar y falle conexiones antes de que el motor SQL esté listo para operar. |
+| **Aislamiento de Redes<br>(Solución Problema 4)** | Se descarta el uso del `default bridge` de Docker. Se define explícitamente una red interna personalizada de tipo bridge (`alentapp-network`), aislando lógicamente los componentes y limitando qué servicios (como la base de datos) tienen denegado el acceso o la exposición directa hacia redes externas. |
+| **Políticas de Logging<br>(Solución Problema 5)** | Se configura de forma global el driver de logs nativo `json-file` acompañado de parámetros estrictos de rotación (`max-size: "10m"` y `max-file: "3"`). Esto asegura la auditoría de eventos de la aplicación sin el riesgo latente de colapsar el almacenamiento en disco por el crecimiento desmedido de los logs de salida. |
+| **Estrategia de Migraciones<br>(Solución Problema 12)** | Para la inicialización del motor de persistencia, se elimina por completo la instrucción `npx prisma migrate dev`, la cual está diseñada exclusivamente para entornos de desarrollo y acarrea el riesgo de resetear la base de datos de producción de forma irreversible. En su lugar, se automatiza el comando `npx prisma migrate deploy`, que aplica los esquemas pendientes de forma segura y no destructiva. |
+| **Inmutabilidad de Código<br>(Solución Problema 13)** | Se eliminan los mapeos de volúmenes de desarrollo que montaban el código fuente local directo al contenedor (`volumes: - .:/app`). En producción el contenedor debe ser autosuficiente e inmutable; los volúmenes quedan limitados únicamente a la persistencia estricta de los archivos de datos del motor de base de datos (`pgdata`). |
+| **Protección del Filesystem<br>(Solución Problema 14)** | Con el objeto de evitar la inyección o ejecución de scripts maliciosos en caliente en caso de que un contenedor sea vulnerado, se añade la bandera `read_only: true` sobre el sistema de archivos raíz, complementándose con el uso de volúmenes de tipo `tmpfs` acotados únicamente para aquellos directorios específicos que requieran escrituras temporales del sistema operativo. |
+| **Mínimo Privilegio del Kernel<br>(Solución Problema 15)** | Se implementa el principio de mínimo privilegio sobre el Kernel de Linux a través de la configuración del Compose. Se remueven los privilegios por defecto mediante `cap_drop: [ALL]` y se añaden estrictamente las capacidades indispensables para la operación de red del servicio web por medio de `cap_add: [NET_BIND_SERVICE]`. |
