@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "noEmit": false,
+      "outDir": "./dist-prod",
+      "rootDir": ".",
+      "declaration": false,
+      "sourceMap": false,
+      "ignoreDeprecations": "6.0"
+    },
+    "include": [
+      "packages/api/src/**/*.ts",
+      "packages/shared/src/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "packages/web"
+    ]
+  }
