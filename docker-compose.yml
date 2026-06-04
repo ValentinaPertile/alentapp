@@ -59,5 +59,38 @@ services:
         depends_on:
             - api
 
+    prometheus:
+        image: prom/prometheus:v2.52.0
+        container_name: alentapp-prometheus
+        volumes:
+            - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus-data:/prometheus
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+        ports:
+            - '9090:9090'
+        depends_on:
+            - api
+
+    grafana:
+        image: grafana/grafana:11.0.0
+        container_name: alentapp-grafana
+        environment:
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+        volumes:
+            - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+            - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+            - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards/files
+            - grafana-data:/var/lib/grafana
+        ports:
+            - '3001:3001'
+        depends_on:
+            - prometheus
 volumes:
     pgdata:
+    prometheus-data:
+    grafana-data:
