@@ -158,3 +158,49 @@ export function createREDMetrics(meter: Meter) {
 export { sdk, meter, prometheusExporter };
 
  
+#### 3. Integración en app.ts
+ 
+La inicialización de OpenTelemetry debe ocurrir *antes de cualquier otro import*:
+ 
+typescript
+// PRIMERO: inicializar OpenTelemetry
+import './infrastructure/telemetry.js';
+ 
+// Luego el resto de imports
+import Fastify from 'fastify';
+import { buildApp } from './app.js';
+// ... resto del código
+
+ 
+#### 4. Instrumentación manual en Controllers
+ 
+En cada controller (ej: PaymentController.ts), registrar las métricas RED:
+ 
+typescript
+import { metrics } from '@opentelemetry/api';
+ 
+const meter = metrics.getMeter('alentapp-api');
+const requestCounter = meter.createCounter('http.requests.total');
+const errorCounter = meter.createCounter('http.requests.errors');
+const requestDuration = meter.createHistogram('http.request.duration', { unit: 'ms' });
+ 
+// En cada handler:
+async create(request, reply) {
+    const start = Date.now();
+    const method = request.method;
+    const route = request.url.split('?')[0];
+    
+    try {
+        const payment = await this.createPaymentUseCase.execute(request.body);
+        requestCounter.add(1, { method, route, status: '201' });
+        return reply.status(201).send({ data: payment });
+    } catch (error) {
+        errorCounter.add(1, { method, route, status: '500' });
+        return reply.status(500).send({ error: 'Error interno' });
+    } finally {
+        requestDuration.record(Date.now() - start, { method, route });
+    }
+}
+
+ 
+---
