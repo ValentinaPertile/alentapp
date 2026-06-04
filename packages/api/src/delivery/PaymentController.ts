@@ -3,6 +3,8 @@ import { CreatePaymentUseCase } from '../application/CreatePaymentUseCase.js';
 import { UpdatePaymentUseCase } from '../application/UpdatePaymentUseCase.js';
 import { GetPaymentsUseCase } from '../application/GetPaymentsUseCase.js';
 import { CreatePaymentRequest, UpdatePaymentRequest, PaymentStatus } from '@alentapp/shared';
+// IMPORT NUEVO: Traemos los contadores globales corregidos
+import { requestCounter, errorCounter, requestDuration } from '../infrastructure/telemetry.js';
 
 //Aclara cuales son los estados posibles
 const VALID_STATUSES: PaymentStatus[] = ['Pending', 'Paid', 'Canceled'];
@@ -28,14 +30,28 @@ export class PaymentController {
         request: FastifyRequest<{ Body: CreatePaymentRequest }>,
         reply: FastifyReply,
     ) {
+        // --- MÉTRICAS: Iniciamos el timer y capturamos método/ruta ---
+        const start = Date.now();
+        const method = request.method;
+        const route = request.routeOptions?.url || request.url.split('?')[0];
+        let finalStatus = '201'; // Estado por defecto si todo sale bien
+
         try {
             const payment = await this.createPaymentUseCase.execute(request.body);
+            
+            // Si tiene éxito, registramos el contador con estado 201
+            requestCounter.add(1, { method, route, status: finalStatus });
             return reply.status(201).send({ data: payment });
         } catch (error: any) {
+            // Evaluamos qué error saltó para setear la etiqueta 'status' correcta en Prometheus
             if (error.message.includes('MEMBER_NOT_FOUND')) {
+                finalStatus = '404';
+                errorCounter.add(1, { method, route, status: finalStatus });
                 return reply.status(404).send({ error: 'El socio no existe' });
             }
             if (error.message.includes('Ya existe un pago activo')) {
+                finalStatus = '409';
+                errorCounter.add(1, { method, route, status: finalStatus });
                 return reply.status(409).send({ error: error.message });
             }
             if (
@@ -45,9 +61,18 @@ export class PaymentController {
                 error.message.includes('requerido') ||
                 error.message.includes('número válido')
             ) {
+                finalStatus = '400';
+                errorCounter.add(1, { method, route, status: finalStatus });
                 return reply.status(400).send({ error: error.message });
             }
-            console.error('PAYMENT_ERROR:', error.message, error.stack); return reply.status(500).send({ error: error.message });
+            
+            finalStatus = '500';
+            errorCounter.add(1, { method, route, status: finalStatus });
+            console.error('PAYMENT_ERROR:', error.message, error.stack); 
+            return reply.status(500).send({ error: error.message });
+        } finally {
+            // --- MÉTRICAS: Pase lo que pase, guardamos cuánto tardó el endpoint ---
+            requestDuration.record(Date.now() - start, { method, route });
         }
     }
 
