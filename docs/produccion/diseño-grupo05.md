@@ -93,4 +93,68 @@ A continuación se definen las 3 métricas fundamentales del método RED que se 
 - *Duration:* Identificar que /api/v1/socios tiene p99=2.5s mientras que /api/v1/sports tiene p99=50ms → optimizar queries
 
 ---
+### b) OpenTelemetry SDK — Configuración
+ 
+#### 1. Propósito
+ 
+El SDK de OpenTelemetry actúa como el agente de recolección e instrumentación dentro de la API. Su responsabilidad es:
+- Capturar automáticamente métricas de HTTP y Fastify 
+- Definir métricas RED personalizadas que requieren lógica de negocio
+- Exportar los datos en formato Prometheus hacia un endpoint /metrics en puerto 9464
+- Permitir que Prometheus scrappee periódicamente estos datos
+
+#### 2. Estructura de configuración 
+Se crea el archivo packages/api/src/infrastructure/telemetry.ts:
+ 
+typescript
+// 1. Importar el SDK de Node.js
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { MeterProvider, Meter } from '@opentelemetry/sdk-metrics';
+import { metrics } from '@opentelemetry/api';
+ 
+// 2. Configurar Prometheus Exporter
+const prometheusExporter = new PrometheusExporter({
+    port: 9464,              // Puerto donde está disponible /metrics
+    endpoint: '/metrics',    // Ruta HTTP donde Prometheus scrappea
+});
+ 
+// 3. Crear SDK con auto-instrumentaciones
+const sdk = new NodeSDK({
+    metricReader: prometheusExporter,
+    instrumentations: [
+        getNodeAutoInstrumentations({
+            '@opentelemetry/instrumentation-http': {},
+            '@opentelemetry/instrumentation-fastify': {},
+        }),
+    ],
+});
+ 
+// 4. Iniciar SDK
+sdk.start();
+ 
+// 5. Obtener el meter (objeto que crea las métricas personalizadas)
+const meter = metrics.getMeter('alentapp-api');
+ 
+// 6. Función para crear métricas RED personalizadas
+export function createREDMetrics(meter: Meter) {
+    const requestCounter = meter.createCounter('http.requests.total', {
+        description: 'Total de requests HTTP',
+    });
+    
+    const errorCounter = meter.createCounter('http.requests.errors', {
+        description: 'Total de errores HTTP (4xx/5xx)',
+    });
+    
+    const requestDuration = meter.createHistogram('http.request.duration', {
+        description: 'Duración de requests en milisegundos',
+        unit: 'ms',
+    });
+    
+    return { requestCounter, errorCounter, requestDuration };
+}
+ 
+export { sdk, meter, prometheusExporter };
+
  
