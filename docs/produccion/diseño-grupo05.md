@@ -93,4 +93,291 @@ A continuación se definen las 3 métricas fundamentales del método RED que se 
 - *Duration:* Identificar que /api/v1/socios tiene p99=2.5s mientras que /api/v1/sports tiene p99=50ms → optimizar queries
 
 ---
+
+### b) OpenTelemetry SDK — Configuración
  
+#### 1. Propósito
+ 
+El SDK de OpenTelemetry actúa como el agente de recolección e instrumentación dentro de la API. Su responsabilidad es:
+- Capturar automáticamente métricas de HTTP y Fastify 
+- Definir métricas RED personalizadas que requieren lógica de negocio
+- Exportar los datos en formato Prometheus hacia un endpoint /metrics en puerto 9464
+- Permitir que Prometheus scrappee periódicamente estos datos
+
+#### 2. Estructura de configuración 
+Se crea el archivo packages/api/src/infrastructure/telemetry.ts:
+ 
+typescript
+// 1. Importar el SDK de Node.js
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { MeterProvider, Meter } from '@opentelemetry/sdk-metrics';
+import { metrics } from '@opentelemetry/api';
+ 
+// 2. Configurar Prometheus Exporter
+const prometheusExporter = new PrometheusExporter({
+    port: 9464,              // Puerto donde está disponible /metrics
+    endpoint: '/metrics',    // Ruta HTTP donde Prometheus scrappea
+});
+ 
+// 3. Crear SDK con auto-instrumentaciones
+const sdk = new NodeSDK({
+    metricReader: prometheusExporter,
+    instrumentations: [
+        getNodeAutoInstrumentations({
+            '@opentelemetry/instrumentation-http': {},
+            '@opentelemetry/instrumentation-fastify': {},
+        }),
+    ],
+});
+ 
+// 4. Iniciar SDK
+sdk.start();
+ 
+// 5. Obtener el meter (objeto que crea las métricas personalizadas)
+const meter = metrics.getMeter('alentapp-api');
+ 
+// 6. Función para crear métricas RED personalizadas
+export function createREDMetrics(meter: Meter) {
+    const requestCounter = meter.createCounter('http.requests.total', {
+        description: 'Total de requests HTTP',
+    });
+    
+    const errorCounter = meter.createCounter('http.requests.errors', {
+        description: 'Total de errores HTTP (4xx/5xx)',
+    });
+    
+    const requestDuration = meter.createHistogram('http.request.duration', {
+        description: 'Duración de requests en milisegundos',
+        unit: 'ms',
+    });
+    
+    return { requestCounter, errorCounter, requestDuration };
+}
+ 
+export { sdk, meter, prometheusExporter };
+
+#### 3. Integración en app.ts
+ 
+La inicialización de OpenTelemetry debe ocurrir antes de cualquier otro import:
+ 
+typescript
+// PRIMERO: inicializar OpenTelemetry
+import './infrastructure/telemetry.js';
+ 
+// Luego el resto de imports
+import Fastify from 'fastify';
+import { buildApp } from './app.js';
+// ... resto del código
+
+#### 4. Instrumentación manual en Controllers
+ 
+En cada controller (ej: PaymentController.ts), registrar las métricas RED:
+ 
+typescript
+import { metrics } from '@opentelemetry/api';
+ 
+const meter = metrics.getMeter('alentapp-api');
+const requestCounter = meter.createCounter('http.requests.total');
+const errorCounter = meter.createCounter('http.requests.errors');
+const requestDuration = meter.createHistogram('http.request.duration', { unit: 'ms' });
+ 
+// En cada handler:
+async create(request, reply) {
+    const start = Date.now();
+    const method = request.method;
+    const route = request.url.split('?')[0];
+    
+    try {
+        const payment = await this.createPaymentUseCase.execute(request.body);
+        requestCounter.add(1, { method, route, status: '201' });
+        return reply.status(201).send({ data: payment });
+    } catch (error) {
+        errorCounter.add(1, { method, route, status: '500' });
+        return reply.status(500).send({ error: 'Error interno' });
+    } finally {
+        requestDuration.record(Date.now() - start, { method, route });
+    }
+}
+
+---
+
+### c) Dashboard RED en Grafana
+ 
+#### 1. Propósito
+ 
+El dashboard permite visualizar en tiempo real el estado de salud de la API mediante los 3 pilares del RED Method.
+ 
+#### 2. Paneles requeridos (6 mínimo)
+ 
+| # | Nombre del Panel | Métrica (PromQL) | Tipo de Gráfico | Propósito | Umbral de Alerta |
+|---|---|---|---|---|---|
+| 1 | *Requests por segundo* | rate(http_requests_total[1m]) | Time series | Ver el tráfico actual. Si baja de repente → backend caído. Si sube → DDoS o pico legítimo | > 5000 req/s |
+| 2 | *Tasa de error (%)* | sum(rate(http_requests_total{status=~"5.."}[1m])) / sum(rate(http_requests_total[1m])) * 100 | Time series | Porcentaje de requests que fallan. Si > 5% → problema crítico | > 5% |
+| 3 | *Latencia p95/p99* | histogram_quantile(0.95, sum(rate(http_request_duration_bucket[5m])) by (le)) y histogram_quantile(0.99, ...) | Time series | Performance percibida por usuarios. p99 > 1000ms → lento | p99 > 1000ms |
+| 4 | *Distribución por status code* | sum by (status) (rate(http_requests_total[5m])) | Stacked area | Ver proporción de 200s, 201s, 4xxs, 5xxs. Útil para debugging | — |
+| 5 | *Memoria del proceso* | process_memory_usage_bytes / 1024 / 1024 | Time series | MB consumidos. Si crece sin detenerse → memory leak | > 512 MB |
+| 6 | *Endpoints más lentos (Top 5)* | topk(5, avg by (route) (http_request_duration_ms)) | Bar chart (horizontal) | Cuáles endpoints son cuellos de botella | — |
+ 
+#### 3. Instrucciones de creación en Grafana
+ 
+*Opción A: Crear manualmente en la UI*
+ 
+1. Acceder a http://localhost:3001 (admin/admin)
+2. Dashboards → New Dashboard
+3. Add Panel (repetir 6 veces)
+4. Para cada panel:
+   - Data source: Prometheus
+   - Metrics: Pegar la consulta PromQL
+   - Panel title: Colocar el nombre
+   - Visualization: Elegir tipo de gráfico
+ 
+*Opción B: Importar desde JSON*
+Crear archivo observability/grafana/dashboards/red-metrics.json:
+ 
+json
+{
+  "dashboard": {
+    "title": "RED — Alentapp API",
+    "description": "Dashboard de observabilidad con métricas Rate, Errors, Duration",
+    "tags": ["alentapp", "red-method", "observabilidad"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Requests por segundo",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "refId": "A"
+          }
+        ],
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "id": 2,
+        "title": "Tasa de error (%)",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) / sum(rate(http_requests_total[1m])) * 100",
+            "refId": "A"
+          }
+        ],
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "id": 3,
+        "title": "Latencia p95",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_bucket[5m])) by (le))",
+            "refId": "A"
+          }
+        ],
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+      },
+      {
+        "id": 4,
+        "title": "Latencia p99",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_bucket[5m])) by (le))",
+            "refId": "A"
+          }
+        ],
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+      },
+      {
+        "id": 5,
+        "title": "Por status code",
+        "targets": [
+          {
+            "expr": "sum by (status) (rate(http_requests_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "type": "stackedarea",
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 }
+      },
+      {
+        "id": 6,
+        "title": "Endpoints más lentos",
+        "targets": [
+          {
+            "expr": "topk(5, avg by (route) (http_request_duration_ms))",
+            "refId": "A"
+          }
+        ],
+        "type": "barchart",
+        "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 }
+      }
+    ]
+  }
+}
+ 
+#### 4. Configuración de Prometheus
+ 
+Actualizar observability/prometheus/prometheus.yml:
+ 
+yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+ 
+scrape_configs:
+  # Job para scrappear las métricas de OpenTelemetry
+  - job_name: 'opentelemetry'
+    static_configs:
+      - targets: ['host.docker.internal:9464']
+    labels:
+      app: 'alentapp'
+      service: 'api'
+
+---
+ 
+## Resumen de componentes
+ 
+| Componente | Ubicación | Responsabilidad |
+|---|---|---|
+| *SDK OpenTelemetry* | packages/api/src/infrastructure/telemetry.ts | Recolectar métricas automáticas y exportar a Prometheus |
+| *Métricas RED manuales* | packages/api/src/delivery/*Controller.ts | Instrumentar handlers para capturar rate, errors, duration |
+| *Prometheus* | observability/prometheus/prometheus.yml | Scrapear /metrics cada 15s y almacenar series temporales |
+| *Grafana Dashboard* | observability/grafana/dashboards/red-metrics.json | Visualizar las métricas en 6 paneles |
+ 
+---
+ 
+## Resumen
+
+┌─────────────────────────────────────┐
+│  API Alentapp (Fastify)             │
+│  + OpenTelemetry SDK                │
+│  → http_requests_total (Counter)    │
+│  → http_request_duration (Histogram)│
+└──────────────┬──────────────────────┘
+               │ (exporta en formato Prometheus)
+               ↓
+┌──────────────────────────────────────────┐
+│  OpenTelemetry Exporter (Puerto 9464)   │
+│  GET http://localhost:9464/metrics      │
+└──────────────┬──────────────────────────┘
+               │ (scrappea cada 15s)
+               ↓
+┌──────────────────────────────────────────┐
+│  Prometheus (Time-Series Database)      │
+│  http://localhost:9090                  │
+│  Almacena: http_requests_total,         │
+│            http_request_duration, etc.  │
+└──────────────┬──────────────────────────┘
+               │ (consulta PromQL)
+               ↓
+┌──────────────────────────────────────────┐
+│  Grafana (Visualización)                │
+│  http://localhost:3001                  │
+│  Dashboard: "RED — Alentapp API"        │
+│  6 paneles con Rate, Errors, Duration   │
+└──────────────────────────────────────────┘
