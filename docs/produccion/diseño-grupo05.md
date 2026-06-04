@@ -22,6 +22,29 @@ Para solucionar de forma integral la presencia de herramientas de compilación i
 * *Optimización de Caché de Capas (Solución Problema 11):* Se altera el orden de las instrucciones de construcción. Se copiarán primero los archivos package*.json antes del resto del código fuente para ejecutar el proceso de instalación. De este modo, los cambios en el código de la aplicación no invalidarán el caché de las dependencias, acelerando significativamente los builds subsiguientes.
 
 ---
+### b) packages/web/Dockerfile.prod
+
+#### 1. Propósito
+Compilar la aplicación cliente Frontend (desarrollada con Vite) y empaquetar los artefactos estáticos resultantes (HTML, CSS, JavaScript) dentro de un servidor web dedicado de alta performance. Esto descarta por completo el servidor de desarrollo de Vite en producción, eliminando vulnerabilidades y optimizando la velocidad de carga de la interfaz del club.
+
+#### 2. Estructura del Multi-stage Build
+El archivo se diseña usando una estrategia de migración tecnológica de 3 etapas, abstrayendo el compilador Node.js de la capa final de entrega:
+
+| Etapa | Nombre | Base | Propósito |
+| :--- | :--- | :--- | :--- |
+| **Stage 1** | `deps` | `node:22-alpine` | Instalación limpia de la totalidad de las dependencias (`dependencies` y `devDependencies`) mediante `npm ci` para posibilitar la compilación de la SPA. |
+| **Stage 2** | `build` | `node:22-alpine` | Copia del código fuente del módulo web y ejecución de la compilación de producción mediante `npm run build` (`vite build`). |
+| **Stage 3** | `runtime` | `nginx:stable-alpine` | Servidor web inmutable de tiempo de ejecución. Se descarta Node.js y se utiliza Nginx de forma exclusiva para servir los estáticos minificados resultantes de la etapa anterior. |
+
+#### 3. Requisitos No Funcionales y de Seguridad
+* **Despliegue de Producción Optimizado:** Se elimina la instrucción de desarrollo `npm run dev --host 0.0.0.0`. La adopción de `nginx:stable-alpine` disminuye drásticamente el peso del contenedor (pasando de ~1GB a ~40MB), reduciendo la superficie de ataque y el consumo de memoria RAM en el servidor del club.
+* **Ajustes de Rendimiento y Endurecimiento del Servidor Web:** Se inyecta un archivo personalizado `nginx.conf` en la etapa de ejecución para proveer:
+  * **Compresión Gzip Activa:** Comprime los archivos de texto (JS, CSS, HTML) sobre la marcha, acelerando los tiempos de respuesta percibidos por el usuario en redes móviles o lentas.
+  * **Políticas de Caché Agresivas:** Configuración de cabeceras `Cache-Control` prolongadas para recursos con hash único en el nombre, evitando descargas redundantes del navegador.
+  * **Cabeceras de Seguridad HTTP:** Inclusión de directivas como `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` y configuraciones básicas de *Content Security Policy* (CSP) para prevenir ataques de inyección (*Cross-Site Scripting* o *Clickjacking*).
+* **Healthcheck:** Configuración de un control interno periódico contra el puerto `80` para monitorizar la salud del demonio de Nginx.
+
+---
 
 ### c) docker-compose.prod.yml
 
