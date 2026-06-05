@@ -1,11 +1,13 @@
 {
   "id": null,
+  "uid": "red-alentapp-api",
   "title": "RED — Alentapp API",
-  "description": "Dashboard de observabilidad con métricas corregidas Rate, Errors y Duration",
-  "tags": ["alentapp", "red-method", "observabilidad"],
+  "description": "Dashboard de observabilidad para la API de Alentapp basado en metricas RED: Rate, Errors y Duration.",
+  "tags": ["alentapp", "red-method", "observabilidad", "opentelemetry", "prometheus"],
   "timezone": "browser",
   "schemaVersion": 36,
   "version": 1,
+  "refresh": "5s",
   "panels": [
     {
       "id": 1,
@@ -15,6 +17,7 @@
       "targets": [
         {
           "expr": "sum(rate(http_requests_total[1m]))",
+          "legendFormat": "requests/s",
           "refId": "A"
         }
       ]
@@ -24,42 +27,43 @@
       "title": "Tasa de error (%)",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
       "targets": [
         {
           "expr": "sum(rate(http_requests_total{status=~\"4..|5..\"}[1m])) / sum(rate(http_requests_total[1m])) * 100",
+          "legendFormat": "errores %",
           "refId": "A"
         }
       ]
     },
     {
       "id": 3,
-      "title": "Latencia Percentil 95 (p95)",
+      "title": "Latencia p95 / p99",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_bucket[5m])) by (le))",
+          "legendFormat": "p95",
           "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_bucket[5m])) by (le))",
+          "legendFormat": "p99",
+          "refId": "B"
         }
       ]
     },
     {
       "id": 4,
-      "title": "Latencia Percentil 99 (p99)",
+      "title": "Requests por status code",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
-      "targets": [
-        {
-          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_bucket[5m])) by (le))",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "Distribución por Status Code",
-      "type": "timeseries",
-      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -67,11 +71,32 @@
             "fillOpacity": 30,
             "stacking": { "mode": "normal", "group": "A" }
           }
-        }
+        },
+        "overrides": []
       },
       "targets": [
         {
           "expr": "sum by (status) (rate(http_requests_total[5m]))",
+          "legendFormat": "status {{status}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Memoria del proceso API",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "process_memory_usage_bytes / 1024 / 1024",
+          "legendFormat": "memoria MB",
           "refId": "A"
         }
       ]
@@ -83,7 +108,8 @@
       "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "topk(5, sum by (route) (rate(http_request_duration_sum[5m]) / rate(http_request_duration_count[5m])))",
+          "expr": "topk(5, sum by (route) (rate(http_request_duration_sum[5m])) / sum by (route) (rate(http_request_duration_count[5m])))",
+          "legendFormat": "{{route}}",
           "refId": "A"
         }
       ]
