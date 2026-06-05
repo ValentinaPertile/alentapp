@@ -21,3 +21,4 @@ test/test-report.json
 *.njsproj
 *.sln
 .env
+dist-prod/

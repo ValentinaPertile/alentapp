@@ -27,6 +27,19 @@ import { CreateLockerUseCase } from './application/CreateLockerUseCase.js';
 import { UpdateLockerUseCase } from './application/UpdateLockerUseCase.js';
 import { DeleteLockerUseCase } from './application/DeleteLockerUseCase.js';
 import { LockerController } from './delivery/LockerController.js';
+import {
+    requestCounter,
+    errorCounter,
+    requestDuration,
+    activeRequests,
+} from './infrastructure/telemetry.js';
+
+declare module 'fastify' {
+    interface FastifyRequest {
+        telemetryStartTime?: number;
+        telemetryRoute?: string;
+    }
+}
 
 export function buildApp() {
     const server = Fastify({
@@ -46,6 +59,49 @@ export function buildApp() {
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
+    });
+
+    server.addHook('onRequest', async (request) => {
+        request.telemetryStartTime = Date.now();
+        request.telemetryRoute = request.url.split('?')[0];
+
+        activeRequests.add(1, {
+            method: request.method,
+            route: request.telemetryRoute,
+        });
+    });
+
+    server.addHook('onResponse', async (request, reply) => {
+        const method = request.method;
+        const route = request.routeOptions?.url ?? request.telemetryRoute ?? request.url.split('?')[0];
+        const activeRoute = request.telemetryRoute ?? request.url.split('?')[0];
+        const status = String(reply.statusCode);
+        const duration = Date.now() - (request.telemetryStartTime ?? Date.now());
+
+        requestCounter.add(1, {
+            method,
+            route,
+            status,
+        });
+
+        if (reply.statusCode >= 400) {
+            errorCounter.add(1, {
+                method,
+                route,
+                status,
+            });
+        }
+
+        requestDuration.record(duration, {
+            method,
+            route,
+            status,
+        });
+
+        activeRequests.add(-1, {
+            method,
+            route: activeRoute,
+        });
     });
 
     // Member
