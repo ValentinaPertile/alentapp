@@ -87,7 +87,7 @@ services:
             - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards/files
             - grafana-data:/var/lib/grafana
         ports:
-            - '3001:3001'
+            - '3001:3000'
         depends_on:
             - prometheus
 volumes:
