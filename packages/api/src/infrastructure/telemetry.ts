@@ -15,7 +15,6 @@ const sdk = new NodeSDK({
     instrumentations: [
         getNodeAutoInstrumentations({
             '@opentelemetry/instrumentation-http': {},
-            '@opentelemetry/instrumentation-fastify': {},
         }),
     ],
 });
