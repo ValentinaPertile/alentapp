@@ -95,7 +95,7 @@
       },
       "targets": [
         {
-          "expr": "process_memory_usage_bytes / 1024 / 1024",
+          "expr": "process_memory_usage / 1024 / 1024",
           "legendFormat": "memoria MB",
           "refId": "A"
         }
