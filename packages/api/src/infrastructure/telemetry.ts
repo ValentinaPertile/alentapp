@@ -13,7 +13,10 @@ const prometheusExporter = new PrometheusExporter({
 const sdk = new NodeSDK({
     metricReader: prometheusExporter,
     instrumentations: [
-        getNodeAutoInstrumentations(),
+        getNodeAutoInstrumentations({
+            '@opentelemetry/instrumentation-http': {},
+            '@opentelemetry/instrumentation-fastify': {},
+        }),
     ],
 });
 
