@@ -9,7 +9,7 @@ COPY packages/shared/package*.json ./packages/shared/
 RUN npm config set fetch-retries 5 \
     && npm config set fetch-retry-mintimeout 20000 \
     && npm config set fetch-retry-maxtimeout 120000 \
-    && npm ci --omit=dev
+    && npm ci --omit=dev --workspace @alentapp/api --workspace @alentapp/shared --include-workspace-root=false
 
 
 FROM node:22-alpine AS build
@@ -23,7 +23,7 @@ COPY packages/shared/package*.json ./packages/shared/
 RUN npm config set fetch-retries 5 \
     && npm config set fetch-retry-mintimeout 20000 \
     && npm config set fetch-retry-maxtimeout 120000 \
-    && npm ci
+    && npm ci --workspace @alentapp/api --workspace @alentapp/shared --include-workspace-root=true
 
 COPY tsconfig.json ./
 COPY tsconfig.prod.json ./
