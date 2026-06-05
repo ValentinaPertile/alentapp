@@ -24,23 +24,33 @@ COPY tsconfig.prod.json ./
 COPY packages/api ./packages/api
 COPY packages/shared ./packages/shared
 
+RUN cd packages/api && npx prisma generate
 RUN npx tsc -p tsconfig.prod.json
 
 
-FROM alpine:3.20 AS runtime
+FROM node:22-alpine AS runtime
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN apk add --no-cache nodejs wget \
-    && addgroup -S appgroup \
-    && adduser -S appuser -G appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist-prod ./dist-prod
 COPY --from=build /app/packages/api/package.json ./packages/api/package.json
 COPY --from=build /app/packages/api/prisma ./packages/api/prisma
+COPY --from=build /app/packages/api/src/generated ./dist-prod/packages/api/src/generated
+
+COPY packages/api/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+RUN echo '{"type": "module"}' > ./package.json
+RUN chown -R appuser:appgroup /app
 
 USER appuser
 
