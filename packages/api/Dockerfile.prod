@@ -42,6 +42,13 @@ COPY --from=build /app/dist-prod ./dist-prod
 COPY --from=build /app/packages/api/prisma ./packages/api/prisma
 COPY --from=build /app/packages/api/src/generated ./dist-prod/packages/api/src/generated
 
+COPY package*.json ./
+COPY packages/api/package*.json ./packages/api/
+
+RUN npm uninstall -g npm && \
+    rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules && \
+    rm -f /bin/ping
+    
 USER appuser
 
 EXPOSE 3000

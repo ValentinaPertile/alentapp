@@ -29,6 +29,7 @@ services:
         limits:
           cpus: "0.50"
           memory: 512M
+
   api:
     build:
       context: .
@@ -72,6 +73,7 @@ services:
         limits:
           cpus: "0.50"
           memory: 512M
+
   web:
     image: alentapp-web:prod
     container_name: alentapp-web
@@ -98,8 +100,42 @@ services:
         limits:
           cpus: "0.25"
           memory: 256M
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - alentapp-prod
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - alentapp-prod
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 volumes:
   pgdata-prod:
+
 networks:
   alentapp-prod:
     driver: bridge
