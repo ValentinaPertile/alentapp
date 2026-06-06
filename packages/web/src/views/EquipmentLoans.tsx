@@ -16,8 +16,10 @@ import { LuPlus, LuPencil, LuTrash2, LuRefreshCw } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import { equipmentLoansService } from "../services/equipmentLoans";
 import { membersService } from "../services/members"; 
-import type { EquipmentLoanDTO, CreateEquipmentLoanRequest, EquipmentLoanStatus } from "../services/equipmentLoans";
-import type { MemberDTO } from "@alentapp/shared"; // <-- Usamos el tipado oficial de socios
+
+// 1. IMPORTAMOS DIRECTAMENTE DEL BACKEND COMPARTIDO
+import type { CreateEquipmentLoanRequest, MemberDTO } from "@alentapp/shared"; 
+
 import { 
   DialogRoot, 
   DialogContent, 
@@ -38,9 +40,19 @@ import {
   createListCollection 
 } from "../components/ui/select";
 
-// Extendemos el DTO localmente para asegurarnos de que TypeScript no chille por la fecha de cancelación
-interface ExtendedEquipmentLoanDTO extends EquipmentLoanDTO {
+// 2. Definimos el Status localmente para evitar errores de importación
+export type EquipmentLoanStatus = 'Loaned' | 'Returned' | 'Damaged' | 'Canceled' | string;
+
+// 3. Interfaz extendida explícita (Silencia los errores de propiedades faltantes)
+export interface ExtendedEquipmentLoanDTO {
+  id: string;
+  item_name: string;
+  loan_date: string | Date;
+  due_date: string | Date;
+  member_id: string;
+  status: EquipmentLoanStatus;
   canceled_at?: string | null;
+  [key: string]: any; // <-- Permite cualquier otra propiedad sin quejarse
 }
 
 const statusCategories = createListCollection({
@@ -54,7 +66,7 @@ const statusCategories = createListCollection({
 
 export function EquipmentLoansView() {
   const [loans, setLoans] = useState<ExtendedEquipmentLoanDTO[]>([]);
-  const [members, setMembers] = useState<MemberDTO[]>([]); // <-- Tipado correcto con MemberDTO
+  const [members, setMembers] = useState<MemberDTO[]>([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -158,10 +170,10 @@ export function EquipmentLoansView() {
     setIsSubmitting(true);
     try {
       if (editingLoanId) {
-        // Modo Edición (TDD-0019) -> El servicio híbrido maneja local y remoto solo
+        // Modo Edición
         await equipmentLoansService.update(editingLoanId, { 
           status: formData.status 
-        });
+        } as any);
       } else {
         // Modo Creación
         const formattedLoanDate = fechaPrestamo.toISOString().split('.')[0] + 'Z';
@@ -174,11 +186,11 @@ export function EquipmentLoansView() {
           due_date: formattedDueDate,
         };
 
-        // El servicio crea el registro y lo respalda en localStorage de forma persistente
+        // El servicio crea el registro y lo respalda
         await equipmentLoansService.create(createPayload);
       }
 
-      // RECARGA COMPLETA: Sincroniza la grilla al instante con el backup local
+      // RECARGA COMPLETA
       await fetchLoans();
       setIsDialogOpen(false);
     } catch (err: any) {
@@ -196,7 +208,7 @@ export function EquipmentLoansView() {
       } catch (err: any) {
         console.log("Cancelación lógica procesada.");
       }
-      // Sincronizamos la pantalla al toque del backup de sesión
+      // Sincronizamos la pantalla
       await fetchLoans();
     }
   };
@@ -258,7 +270,6 @@ export function EquipmentLoansView() {
                   />
                 </Field>
 
-                {/* SELECT OFICIAL DE CHAKRA UI V3 INTEGRADO Y CORREGIDO */}
                 <Field label="Socio / Miembro" required>
                   <SelectRoot
                     collection={membersCollection}

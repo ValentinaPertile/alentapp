@@ -31,6 +31,9 @@ services:
           memory: 512M
 
   api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile.prod
     image: alentapp-api:prod
     container_name: alentapp-api
     env_file:
@@ -75,7 +78,7 @@ services:
     image: alentapp-web:prod
     container_name: alentapp-web
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       api:
         condition: service_healthy
@@ -97,6 +100,38 @@ services:
         limits:
           cpus: "0.25"
           memory: 256M
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - alentapp-prod
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - alentapp-prod
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   pgdata-prod:
