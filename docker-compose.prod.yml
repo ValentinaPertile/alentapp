@@ -29,8 +29,10 @@ services:
         limits:
           cpus: "0.50"
           memory: 512M
-
   api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile.prod
     image: alentapp-api:prod
     container_name: alentapp-api
     env_file:
@@ -70,7 +72,6 @@ services:
         limits:
           cpus: "0.50"
           memory: 512M
-
   web:
     image: alentapp-web:prod
     container_name: alentapp-web
@@ -97,10 +98,8 @@ services:
         limits:
           cpus: "0.25"
           memory: 256M
-
 volumes:
   pgdata-prod:
-
 networks:
   alentapp-prod:
     driver: bridge
