@@ -78,7 +78,7 @@ services:
     image: alentapp-web:prod
     container_name: alentapp-web
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       api:
         condition: service_healthy
