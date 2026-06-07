@@ -1,28 +1,37 @@
+## 4.1. Verificación técnica
 | Métrica | Antes (desarrollo) | Después (producción) | Mejora |
 | :--- | :--- | :--- | :--- |
 | **Tamaño imagen API** | ~1GB | 164 MB | Reducción del ~84% |
 | **Tamaño imagen Web** | ~570MB | 26.3 MB | Reducción del ~95% |
 | **Tiempo de startup API** | ~4.5s | 1.48s | Arranque ~3 veces más rápido |
 | **Memoria API (idle)** | ~120 MB | 43.31 MB | Reducción del ~64% en consumo RAM |
-| **Endpoints accesibles** | Sí (`:3000/...`) | Sí (`:3000/...`) | N/A |
-| **Frontend vía nginx** | No | Sí (`:8080/`) | N/A |
+| **Endpoints accesibles** | Sí (`:3000/...`) | Sí (`:3000/...`) | |
+| **Frontend vía nginx** | No | Sí (`:8080/`) | |
 
 ## 4.2. Verificación de seguridad
-Se ha comprobado que se cumpla:
-- [x] La API corre con usuario no-root (`appuser`). Confirmado mediante el comando `whoami` dentro del contenedor.
-- [x] No hay `npm`/`tsc` en la imagen final. Confirmado comprobando la ausencia de los binarios con `which node tsc npm python`.
-- [x] Read-only filesystem activo. Confirmado al intentar ejecutar `touch /test`, resultando en error de sistema de archivos de solo lectura.
-- [x] Capabilities mínimas. Se eliminaron privilegios de red innecesarios y se comprobó que el contenedor no tiene capacidad de realizar escaneos externos.
-- [x] Variables sensibles vía `.env`, no hardcodeadas.
-- [x] Healthchecks funcionando. Confirmado con `docker ps`, mostrando estado `(healthy)` en la API y la Base de Datos.
+
+| Medida | Comando | Resultado esperado |
+|---|---|---|
+| API corre como usuario no-root | `docker exec alentapp-api id` | `uid=100(appuser) gid=101(appgroup)` |
+| `tsc` no está en la imagen final | `docker run --rm alentapp-api:prod which tsc 2>&1` | Sin output (no existe) |
+| `npm` no está en la imagen final | `docker run --rm alentapp-api:prod which npm 2>&1` | Sin output (no existe) |
+| Read-only filesystem | `docker exec alentapp-api touch /test 2>&1` | `touch: /test: Read-only file system` |
+| Capabilities mínimas | `docker inspect alentapp-api \| grep -A 5 "CapDrop"` | `"CapDrop": ["ALL"]` |
+| Variables sensibles via `.env` | `grep DATABASE_URL docker-compose.prod.yml` | `DATABASE_URL: ${DATABASE_URL}` |
+| Healthchecks funcionando | `docker compose -f docker-compose.prod.yml ps` | API, Web y DB en estado `healthy` |
+
+---
 
 ## 4.3. Verificación de observabilidad
-- [x] OpenTelemetry exporta métricas en el puerto `9464/metrics`.
-- [x] Prometheus scrapea correctamente el endpoint OTLP.
-- [x] Grafana tiene al menos un datasource Prometheus configurado.
-- [x] El dashboard RED tiene 6 paneles funcionales.
-- [x] Los gráficos responden al tráfico generado con el script de bash.
-- [x] Las métricas de error reflejan los 4xx/5xx forzados.
+
+| Verificación | Comando | Resultado esperado |
+|---|---|---|
+| OpenTelemetry exporta métricas | `curl http://localhost:9464/metrics \| head -10` | Métricas `http_server_duration_count`, `target_info` |
+| Prometheus scrapea correctamente | Abrir `http://localhost:9090/targets` | Job `opentelemetry` en verde UP |
+| Grafana tiene datasource Prometheus | Abrir `http://localhost:3001` → Connections → Data sources | Prometheus como default |
+| Dashboard RED tiene 6 paneles | Abrir `http://localhost:3001` → Dashboards → RED — Alentapp API | 6 paneles con datos |
+| Métricas responden al tráfico | Ver más abajo el script de tráfico | Paneles se actualizan en tiempo real |
+| Métricas de error reflejan 4xx/5xx | `curl http://localhost:3000/api/v1/socios/99999` | Panel Tasa de error sube |
 
 ## 4.4. Documentación de decisiones
 
@@ -46,3 +55,7 @@ Durante la migración a producción nos enfrentamos a:
 3. **Conflictos del Puerto 80:** Al levantar el frontend web, Docker falló con `address already in use` en el puerto 0.0.0.0:80. Investigamos el host y descubrimos procesos nativos de Windows (como el servicio W3SVC/IIS) reteniendo el puerto. Lo liberamos deteniendo los servicios conflictivos desde una consola de administrador en el host.
 4. **Permisos de red en Alpine (El "ping" residual):** A pesar de aplicar `cap_drop: [ALL]`, el contenedor seguía permitiendo hacer pings externos debido a la configuración por defecto de rangos IPv4 en Docker. Para garantizar la máxima seguridad, lo resolvimos inyectando un comando `rm -f /bin/ping` en la etapa de ejecución del Dockerfile.
 5. **Comunicación de Prometheus:** Al principio, Prometheus no lograba registrar la API y devolvía `activeTargets: []`. Comprendimos que `host.docker.internal` no aplicaba para una red bridge de producción. Lo solucionamos actualizando el `prometheus.yml` para apuntar a la IP interna del contenedor mediante el DNS de Docker (`alentapp-api:3000`).
+
+
+![alt text](image.png)
+
