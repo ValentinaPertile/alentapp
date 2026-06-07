@@ -46,3 +46,7 @@ Durante la migración a producción nos enfrentamos a:
 3. **Conflictos del Puerto 80:** Al levantar el frontend web, Docker falló con `address already in use` en el puerto 0.0.0.0:80. Investigamos el host y descubrimos procesos nativos de Windows (como el servicio W3SVC/IIS) reteniendo el puerto. Lo liberamos deteniendo los servicios conflictivos desde una consola de administrador en el host.
 4. **Permisos de red en Alpine (El "ping" residual):** A pesar de aplicar `cap_drop: [ALL]`, el contenedor seguía permitiendo hacer pings externos debido a la configuración por defecto de rangos IPv4 en Docker. Para garantizar la máxima seguridad, lo resolvimos inyectando un comando `rm -f /bin/ping` en la etapa de ejecución del Dockerfile.
 5. **Comunicación de Prometheus:** Al principio, Prometheus no lograba registrar la API y devolvía `activeTargets: []`. Comprendimos que `host.docker.internal` no aplicaba para una red bridge de producción. Lo solucionamos actualizando el `prometheus.yml` para apuntar a la IP interna del contenedor mediante el DNS de Docker (`alentapp-api:3000`).
+
+
+![alt text](image.png)
+
